@@ -1,0 +1,27 @@
+---
+title: Building A DBT Model In Snowflake
+slug: connecting-dbt-to-snowflake
+date_published: 2021-09-14T20:49:30.000Z
+date_updated: 2021-10-19T10:45:23.000Z
+excerpt: A short demo of building a DBT model against Snowflake.
+order: 8
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+We have written about [DBT](http://getdbt.com) extensively on the site, explaining how it helps to implement a repeatable developer lifecycle around database transformations executed within a data warehouse.  
+
+DBT and Snowflake are very complementary, and are frequently deployed together as part of modern cloud based data stacks.  
+
+Instead of doing traditional ETL before data goes into Snowflake, the pattern is typically to move to an ELT model, where relatively unprocessed data is loaded into Snowflake, and then transform it within the warehouse using DBT.
+
+Of course we can also take advantage of Snowflake features such as virtual warehouses, multi-cluster warehouses and the ability to query external stages to make very high performing and clean transformation pipelines.  
+
+In the video below, we demonstrate the process for executing your first DBT transformation.  It involves creating a new dbt model, configuring the DBT profile to point to the Snowflake instance, then executing a new transformation to aggregate some data into a reporting view.  
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Kyp2D7EgoHk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+As you progress with DBT on Snowflake, there are a few useful tips on [this page](https://docs.getdbt.com/reference/resource-configs/snowflake-configs), such as the use of transient tables, query tags and table clustering to help make your DBT transformations easier to administer and more performant.  
+

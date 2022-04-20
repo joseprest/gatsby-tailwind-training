@@ -1,0 +1,65 @@
+---
+tocTitle: TBC
+title: Introduction To Clickhouse
+slug: introduction-to-clickhouse
+order: 1
+category:
+    - clickhouse
+custom_excerpt: In this lesson we will introduce Clickhouse and cover it's distinctive features.  
+---
+
+## Lesson Overview
+
+In this lesson we will introduce Clickhouse and explain some of the distinctive features which are making it one of the preferred data warehouse solutions for high performance analytical use cases.  
+
+## Data Warehouses
+
+Data Warehouses are large centralised databases which are typically used to combine data from multiple line of business applications and data sources.  For instance, businesses often need to combine all of the data from sales, marketing, finance and HR into a centralised Data Warehouse for a joined-up view across the entire business.  
+
+After ingesting and organising this data, the Warehouse is then usually responsible for exposing it to business stakeholders by serving reports, dashboards, and interactive analytics by data analysts, usually through third party business intelligence tools, for example Tableau, PowerBI, or Looker.   
+
+Data Warehouses are designed to ingest and store large volumes of data and to be able to serve these business intelligence workloads with high performance.  This contrasts with transactional databases such as MySQL or Postgres which are designed for transactional workloads with high performance when working with small datasets or single rows, but are not optimised for high performance over large data volumes.  Sometimes, the terms OLAP (Online Analytical Processing) or OLTP (Online Transaction Processing) respectively.
+
+## What Is Clickhouse?
+
+Clickhouse is an open source, relational,  OLAP data warehouse which has a focus on query speed and performance.   
+
+Though Clickhouse does fit into the definition of a Data Warehouse discussed above, it is best suited and more commonly found in situations where we have high volumes of low level "event" data rather than combining line of business applications.  Example use cases with this type of data include IOT, Clickstream data, log files or real time market data where we need to perform ad-hoc analytics over big structured datasets.  
+
+Though it is of course possible to do pre-aggregations, joins, heavily normalised schemas etc as we would find in other Data Warehouses, Clickhouse is more about providing enough power simply to query the raw event data.  This is about philosophical approach rather than being due to any technical limitation though.  
+
+Clickhouse was originally developed as an internal project by [Yandex](http://yandex.ru), a Russian search engine, to power an internal platform called Metrica.  It was then released as open source in 2016, and became sponsored by a commercial entity Clickhouse, Inc in 2021.  
+
+## Distintinguishing features
+
+Though there are a number of analytical databases and data warehouses available in the market, Clickhouse is differentiated in the following ways:
+
+- Performance - Clickhouse is known for it's blazing fast performance.  If you need to query and aggregate large volumes of structured relational data, Clickhouse will often be the fastest option available in both the open source and commercial markets;
+
+- Open Source - Clickhouse is open source, making it free to download, change and deploy;
+
+- Ease Of Deployment -  Clickhouse is relatively easy to start with and manage.  It is delivered as a single binary which can be started out of the box, configured easily and ran anywhere;
+
+- SQL  Native - Clickhouse is fully based on ANSI SQL making it more familiar and easier to interact with through APIs and reporting tools.  This is in contrast to other competing tools in this space such as Druid or Elastic which are primarily interacted with via a JSON HTTP API; 
+
+- Clustering - Clickhouse has an elegant model for forming a cluster and distributing query work across the shard with maximmum parallelism.  As with the single node deploy, this is also relatively easy to stand up and maintain;
+
+In short, we have a very powerful, fast,open source database which is easy to administer.  It's easy to see why Clickhouse is growing in popularity as companies are looking to achieve more with their data and deploying real-time analytical use cases.
+
+## Downsides To Clickhouse
+
+In order to achieve such high performance, there are also a few downsides and limitations to Clickhouse:
+
+- Limited Updates and Deletes - Support for updates and deletes of data within Clickhouse is rudimentary.  We can allow old data to be removed automatically, but it is not designed for ad-hoc updates and deletions;
+- No Transactions - Clickhouse does not have the concept of transactions giving us guarantees that groups of DML statements execute or fail as a batch;
+
+These limitations are common to many OLAP data warehouses and not just Clickhouse.  The column oriented nature of these warehouses makes them ideal for very fast reads of aggregated data, but inherently unsuitable for lots of small concurrent transactional reads, updates and deletes.
+
+## Summary
+
+In this lesson we introduced Clickhouse and described it's distinguishing features and properties, especially it's emphasis on query performance.
+
+We also considered some of the downsides and tradeoffs of using a database like Clickhouse.
+
+In the next lesson we will connect to Clickhouse on our [training virtual machine](/running-training-environment).
+

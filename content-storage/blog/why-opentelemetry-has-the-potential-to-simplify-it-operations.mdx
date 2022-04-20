@@ -1,0 +1,42 @@
+---
+title: Why OpenTelemetry Has The Potential To Simplify IT Operations
+slug: why-opentelemetry-has-the-potential-to-simplify-it-operations
+date_published: 2021-09-03T14:08:07.000Z
+date_updated: 2021-10-19T10:47:55.000Z
+order: 145
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Telemetry is about collecting information from remote sources and bringing it back into a centralised location for analysis and monitoring.
+
+In the physical world, we could be talking about a connected car sending telemetry about faults or performance back to the manufacturer, whilst in the software world, the reports sent back to base when an application crashes are a typical example.
+
+There are broadly three classes of telemetry that people need to send to meet their monitoring requirements:
+
+- **Logs** - Structured or unstructured details about something that happened. An event such as a user logon or a crash report are examples of things we might wish to log, and would contain information such as a timestamp, a description of the event, and metadata about the event;
+- **Metrics** - Typically a numeric measurement of something that has happened. It could be a simple count of events such as user logins, an average/minimum/maximum calculation based on a time window, or perhaps a time duration monitoring how long some operation took in order to measure performance;
+- **Traces** - Often used to describe how execution has passed through a service or through many services to gain insight into what actually happened. This is increasingly important in todays complex, distributed, cloud native environments where it can be hard to understand what is happening.
+
+Many developers have had to solve this problem of capturing and publishing log, metric and trace data to some backend. Broadly, these are two types of developers:
+
+- Internal enterprise developers who need to develop bespoke solutions for monitoring their code and application services. As well as lower level concerns, this code could also be related to higher level business metrics such as new customer on-boards or incorrect password attempts;
+- Monitoring or IAAS vendors who need to capture telemetry to feed their dashboards and alerting systems. Often, this was achieved by deploying a third party agent onto each host which monitors log files and instruments applications to capture and stream data.
+
+As well as the wasted effort in redeveloping telemetry solutions, these solutions are all proprietary, working in a different way and publishing telemetry information in a non-standard format. Often, IT operations engineers would need to run lots of agents on their servers, all of which take resources and need to be configured and ran in slightly different ways.
+
+### Introducing OpenTelemetry
+
+[OpenTelemetry](https://opentelemetry.io/) is an interesting project that is currently in the late stages of development which aims to fix this. It is hosted by the [CNCF](https://www.cncf.io/) and has committed industry support from the likes of AWS and Google.
+
+OpenTelemetry describes itself as a standard set of APIs and SDKs which can be used to instrument, generate, collect, and export telemetry data for analysis in order to understand your software's performance and behavior.
+
+With a wide range of language bindings, this should ultimately make it much easier for developers to integrate telemetry into their applications. Likewise, monitoring agents could be configured in a consistent manner, and would share their telemetry information according to a published [standard](https://github.com/open-telemetry/opentelemetry-specification).
+
+Though Telemetry is a fairly low level infrastructure concern, there are many high level implications and benefits if OpenTelemetry does become a de-facto standard.
+
+- All applications can be developed and configured to collect and publish telemetry data in a standard way. Where an agent is required, a single agent could be shared, reducing overhead on servers and reducing the DevOps overhead of configuring and managing them;
+- All of these services at the sending and receiving end can talk a [common language](https://github.com/open-telemetry/opentelemetry-specification) in how telemetry information is captured and transmitted. This means that different frontends and backends can be connected to the same streams of telemetry;
+- Lock-in to proprietary monitoring tools is reduced as you can switch your monitoring GUI without needing to redeploy agents. As this is an area with so much innovation but where the solutions can also be expensive, this is a key win of standards in this area.
+
+In the cloud native world of distributed applications, the need for telemetry monitoring of logs, metrics and tracing and bringing them back to a centralised location is much more complex but growing in importance. To simplify this whole area and reduce the operations overhead would appear to be a win/win which will really drive innovation in the space. For those looking to simplify their operations, OpenTelemetry is definitely one to watch and plan for the deployment of.

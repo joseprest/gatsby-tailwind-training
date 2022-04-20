@@ -1,0 +1,68 @@
+---
+title: What Is Kafka Streams?
+slug: what-is-kafka-streams
+date_published: 2021-09-03T13:23:50.000Z
+date_updated: 2021-10-19T20:53:31.000Z
+excerpt: Kafka Streams is the component of the Kafka ecosystem which can be used for stream processing.  This involves taking messages from Kafka, usually as they are produced in real time, and processing or responding to them in some way.  
+order: 140
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Kafka Streams is the component of the Kafka ecosystem which can be used for processing and responding to streams of events which are published on Kafka topics.
+
+The typical pattern involves taking messages from Kafka, usually as they are produced in real time, processing or responding to them in some way, and then possibly writing further messages back out to Kafka.  Examples of this pattern include:
+
+- Calculating analytics over event streams e.g. tracking the average order value over the last 30 minutes;
+- Transforming events e.g. looking up and adding the customers current credit limit to the order for downstream validation;
+- Causing some action to happen in response to the event e.g. sending an email to the customer.
+
+Of course, we could achieve the same patterns using the traditional Kafka Consumer API.  However, Kafka streams is a slightly higher level of abstraction than that, and provides a slightly more opionated and structured approach for stream processing.  
+
+## Kafka Streams Vs The Competition
+
+Kafka Streams is one of a number of options for stream processing frameworks, with alternatives including Flink, Google Cloud Dataflow and Spark Streams. 
+
+Kafka Streams does however have some compelling benefits over these alternatives.
+
+Firstly, no cluster is required to execute the Kafka Streams job. Instead, they simply run as a standalone POJO services embedded directly within your application.  This can avoid the need to build and operate a cluster, simplifying your estate.
+
+Kafka Streams is also naturally tightly integrated with Kafka, and makes use of the Kafka primitives for performance and failover in a very integrated way. This includes partitions, rebalancing, offset management etc giving us a high degree of control of how our application interacts with Kafka whilst giving us the same guarantees about exactly once processing.
+
+Operational and environmental concerns like these tend to be the biggest difference when choosing a stream processing framework.  The actual process of writing the stream processing is generally similar, being based around a DSL that provides operations over the data stream.
+
+## Kafka Streams DSL Walkthrough
+
+As with many of the stream processing engines, Kafka Streams exposes a Domain Specific Language (DSL) for developing the processing topologies. Though intended to simplify things, this declarative style of programming does take some getting used to for people new to it.
+
+The first thing we might need to do is define a stream representing our inbound data. In the example below, we have defined a stream tied to the topic customer_orders, where the key and value are of type Strings and will be serialised and deserialised by String “Serdes” objects.
+
+    KStream<String, String> customerOrdersStream = builder.stream("customer_orders", Consumed.with(Serdes.String(), Serdes.String()));
+
+Type handling and serialisation lead to most of the complexity in Kafka streams, but are necessary to move between binary data on Kafka and types we can work with in the JVM.
+
+In this example, we were were receiving events in the format <customer_id>:<product_id>, and the aim was to count the number of orders for each customer in a given our tie window. The first task is to do a simple **grouByKey** operation every time there is an event to ask how many orders we had for each customer_id.
+
+    KGroupedStream<String, String> ordersByCustomer = customerOrdersStream.groupByKey();
+
+Next, we group the events into time windows of 5 seconds each using the default tumbling window semantics.
+
+    TimeWindowedKStream<String, String> windowedStream = ordersByCustomer.windowedBy(TimeWindows.of(Duration.ofSeconds(5)));
+
+For each of the groupings within each window, we then count how many entries we have and change it the event to a pair of customer_id:count records.
+
+    KTable<Windowed<String>, Long> count = windowedStream.count();
+
+Finally, we prepare the message to be sent out to a new topic. Because our client was expecting a string, we mapped the long object storing the count back to a string before publishing.
+
+    KStream<String, String> mapped = count.toStream().map((key, val) -> new KeyValue<>(key.key(), val.toString()));
+
+Finally, the object is pushed to a new Kafka topic called orders_by_customer.
+
+    mapped.to("orders_by_customer");
+
+This was a very simple example of taking a stream of orders, then counting how many orders each customer has placed in 5 minute windows. Though there is some boilerplate code around this to create the connection and tear it down cleanly, in just 5 lines of code we have a very high performing windowed aggregation which would be quite tricky to derive in traditional database environments.
+
+## Conclusion
+
+Kafka Streams tends to be our go to stream processing engine as a simple but powerful solution which keeps you in the Kafka ecosystem. The DSL does take some getting used to even for experienced Java developers, but this is applicable to the entire stream processing world. Overall Kafka Streams is one of the fastest and lightest frameworks to begin the stream processing journey with.

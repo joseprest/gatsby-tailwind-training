@@ -1,0 +1,130 @@
+---
+tocTitle: TBC
+title: MergeTree Engine Family
+slug: clickhouse-mergetree-engine-family
+custom_excerpt: In this lesson we will introduce the MergeTree table engine.  
+order : 5
+category:
+    - clickhouse
+---
+
+## Lesson Overview
+
+In this lesson we will introduce the MergeTree table engine.  
+
+## About MergeTree
+
+When we create a table in Clickhouse we need to choose an engine which is responsible for storing and querying the data.  
+
+Different table engines are suitable for different use cases, data patterns and access patterns.  It is therefore important to know broadly how they work and when to choose which.
+
+This feature is fairly unique to Clickhouse, so it's a new concept to grasp and decision to make even for experienced data engineers and DBAs.
+
+The MergeTree engines are the most robust and heavily used engines of the choices available.  There are actually a number of table engines in the same family, all that work slightly differently.  What they have in common is that they accept inserts, but then work behind the scenes to organise and merge the rows to optimise the table data.   
+
+## Types Of MergeTree
+
+There are five table engines in the MergeTree family:
+
+- Merge Tree - The basic table which works by accepting data and then
+- Replacing Merge Tree - This will replace rows with more recent rows
+- Summing Merge Tree - This will combine rows and sum up data for instance we can aggregate by hour
+
+## Using The Merge Tree
+
+The table engine is specified at the time of table creation using the _ENGINE_ parameter.  Let's go ahead and create three tables with three different engines which we will later user to explain the concept:
+
+```
+create table
+```
+
+```
+create table
+```
+
+```
+create table
+```
+
+## Merge Tree Exploration 
+
+When you create data in a Clickhouse table, the rows are stored in segments.  
+
+```
+create table
+```
+
+## Replacing Merge Tree
+
+In some tables, we are only interested in the most recent value of a particular data item.  For instance, if we have a table of bank balances, there will be many instances where we only care about the current value and not the billions of historical values across the customer basis.  In this situation, the Replacing Mergre Tree could help by dropping old values each time a new value is inserted for us.  
+
+We can begin by creating a table with the ReplacingMergeTree engine.  We need to specify a PRIMARY KEY to describe which objects are replaced.  To illustrate the point, we will use a compound primary key which combines two fields.
+
+```
+create table 
+```
+
+We can insert data. 
+
+```
+insert into orders values ( 1, 2, 3 );
+insert into orders values ( 1, 2, 3 );
+insert into orders values ( 1, 2, 3 );
+```
+
+A lot of the MergeTree operations work behind the scenes.  Though there are no guarantees, issuing the optimize 
+
+```
+optimize table orders
+```
+
+And with a quick check we can see that no data has been merged:
+
+
+```
+select * from orders
+```
+
+We will now insert a row which we expect to be replaced, using the same order_id and customer_id.
+
+
+```
+insert into orders values ( 1, 2, -99 );
+```
+
+Optimise the table again:
+
+```
+optimize table orders
+```
+
+And with  one more check we will see that the  latest order has been replaced:
+
+```
+select * from orders
+```
+
+## Summing Merge Tree
+
+The Summing Merge Tree works by adding up values.  This is sometimes referred to as Rolling Up.  
+
+An example use case might be adding up the total value of orders  for a given product
+
+```
+create table 
+```
+
+We can insert data. 
+
+```
+insert into orders values ( 1, 2, 3 );
+insert into orders values ( 1, 2, 3 );
+insert into orders values ( 1, 2, 3 );
+```
+
+
+## Summary
+
+In this lesson we looked more closely at the MergreTree table engine family, which is the most common and robust table engine used to manage Clickhouse tables. 
+
+In the next lesson, we will look at how to integrate Apache Kafka directly with Clickhouse.  

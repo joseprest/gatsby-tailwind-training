@@ -1,0 +1,24 @@
+---
+title: Timeflow As A Stream Processing Engine For Apache Druid
+slug: timeflow-as-a-stream-processing-engine-for-apache-druid
+date_published: 2020-02-25T12:50:00.000Z
+date_updated: 2021-10-19T10:50:53.000Z
+order: 133
+image: /x.jpg
+featured_image: /x.jpg
+
+---
+
+[Timeflow](/the-key-value-propositions-of-timeflow) is a platform for working with real-time data, with capabilities for providing stream processing.  The platform allows us to listen to sequences of events and identify and respond to patterns of interest as they happen on the streams.   An example of complex event processing in a business scenario might be "inform us when a high value customer places three orders in a 7 day time window and one of those is for a product with category Electronics".
+
+By design, Timeflow is tightly integrated with Apache Druid as it's event store.  We recently [wrote this article](/why-we-use-apache-druid-as-our-datastore/) describing the journey we went on with datastores for event processing, and explain why we chose Druid.
+
+We currently use Druid in three ways:
+
+- In real time, we store the state of our stream processing and event streams.  For instance, if we are looking for three failed credit card transactions in an hour window, we store the relevant data in Druid and interogate it in real time to look for the pattern of interest as new events come in.  Druids low latency slice and dice analytics are perfect for this scenario and allows us to keep stream processors simple and stateless by offloading state to the database;  
+- Secondly, we store all of the events that we process in Druid as a long term persistent event store.  This gives us a log of what actually happened over time, be it orders, credit card transaction or clickstream data which can be used for later analysis and audit purposes;
+- Finally, we work with customers to extract value from their event data hosted in Druid and processed by Timeflow, and build a range of analytical applications on top of the Apache Druid in order to deliver bysiness value.  This is sometimes as simple as dashboards and reports, and more often than not complex interactive applications.  
+
+One lens to look at Timeflow is therefore as an enhancement to Apache Druid which gives this stream processing capability.  Most people wanting to do this will be looking at solutions such as Kafka Streams, Kinesis, Spark or Storm.  These are great platforms, but organisations implementing them will find that integration is required between their stream processing and event store.  By deeply integrating the two, we feel that we have an incredibly simple model which does not sacrifice scalability or latency.  
+
+We would be interested in learning more about how the community are combining event processing and Druid.  Please do get in touch for an informal conversation about your experiences with this.  

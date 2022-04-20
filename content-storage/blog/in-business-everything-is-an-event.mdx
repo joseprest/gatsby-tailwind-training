@@ -1,0 +1,67 @@
+---
+title: In Business, Everything Is An Event
+slug: in-business-everything-is-an-event
+date_published: 2020-02-06T04:16:00.000Z
+date_updated: 2021-10-19T10:51:29.000Z
+order: 116
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Imagine a simple customer interaction for an eCommerce business:
+
+- A customer visits the website and browses some products;
+- They browse information about a specific product;
+- A few days later, they come back and place an order;
+- The order is packed and dispatched;
+- A few days later, the customer logs onto the site and leaves a negative review.
+
+Each of these steps can be thought of as an **event**, and together they represent an **event stream** of things that happen over time.  
+
+If businesses can automate the analysis of these events intelligently, and **in real time**, there is considerable opportunity to improve the customer experience or business metrics.  For instance, an alert could be sent to the customer as the product is dispatched, delayed dispathes can be flagged, or an uptick in negative reviews for a particular product could be identified and the product removed from sale immediately.  
+
+In a typical business, there are thousands of examples of this time of event based thinking and automated intervention based on what the event stream tells us.  And we believe this is almost totally untapped potential.  Sure, most businesses are recording  data such as the above, but it is processed almost totally offline, in data warehouses and data lakes after the fact.  There are very few attempts to process and respond to this data in real time.  
+
+## Transaction Monitoring Example
+
+Lets consider a second **event stream** relating to credit card transactions and fraud detection:
+
+- The customer orders a low value product in the UK;
+- The next day, the customer orders a low value product in Paris;
+- 3 hours later, the customer orders a high value product in the UK;
+- 3 months later, the customer orders a high value product in China.
+
+Choosing whether to accept or decline the final transaction is an interesting question.  The customer usually places low value orders, but has ordered high value items in the past.  The fact they are ordering from China is an anomaly, but they do have international transaction history too.  The time information gives us some interesting information, with the 3 month delay, the value and the location combined perhaps inclining us to reject the transaction.
+
+This is another example of event stream processing, though with more complex statistical or data science requirements, higher demands for latency and possibly more impact on the business if we accept too many fraudulent transactions.  
+
+Despite the technical and statistical challenges, event stream processing is very widely deployed as a mechanism for preventing fraud and financial crime.  
+
+## Moving Towards Event Streaming
+
+Event streams like this are everywhere in business, and they have massive amounts of value if we can extract value from them by understanding them *and* react to what they are telling us.  
+
+As we explain in [Analytics Need To Be Real Time](/analytics-increasingly-need-to-be-real-time-to-maximise-their-value), the value of data is highest immediately after it is captured, and then decays over time.  Event stream processing allows us to respond immediately after the situation of interest happens.  
+
+As we cover in [closed loop analytics](/closed-loop-analytics), we can combine this processing with automation to resolve or intervene in situations automatically before business KPIs or Metrics or ever impacted.  This is really a powerful idea which can have potentially huge business cases associated with it.  
+
+Unfortuantely, most businesses today simply do not have this capability.  Instead, they are using traditional delayed business intelligence where data is batch uploaded and then used by humans for strategic decision making at an aggregated level.  The insights then sit on a dashboard, ready for some executive to log in and review them manually.  These businesses are not thinking, modelling, or responding in terms of real-time individual event streams.  It is a multi £billion missed opportunity.   
+
+## Event Processing Vs Signal Processing
+
+There is relatively little example of processsing and analysing business events such as orders and complaints using event processing techniques.  However, there are lots of examples of succesful deployment with lower level streaming data in domains such as the following:
+
+- Finance - Scenarios such as algorithmic trading, electronic market making, financial crime or market data processing 
+- Security - Detecting real time patterns and anomalies which may represent security intrusions 
+- Predictive Maintenence - Identifying equipment which could potentially break down based on signals from monitoring devices
+- IOT - Processing and transforming large volumes of data from distributed devices in consumer or commercial settings 
+
+People naturally turn to stream processing for these types of lower level "signal processing" tasks  as its the only viable solution.  However, the untapped potential we see is in using similar concepts for business events at a higher level of abstraction such as orders, customer complaints, website visits etc.  
+
+## Where Timeflow Fits In 
+
+At [Timeflow](/), we are focussing on helping companies with this journey, moving from traditional batch data processing towards more intelligent, real time operational analytics based on streaming technologies that are described above.  
+
+Our [low code platform](/) brings this capability to businesses with limited engineering effort, whilst our [professional services](/services) will support with the end to end transformation which this requires.  
+
+If the points above resonated with you, and you are looking to move towards being a more intelligent and reactive businesses, please [reach out](/) for an informal conversation about event stream processing.  

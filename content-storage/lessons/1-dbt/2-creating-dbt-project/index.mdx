@@ -1,0 +1,312 @@
+---
+tocTitle: TBC
+title: Creating A DBT Project
+slug: creating-first-dbt-project
+custom_excerpt: "In this lesson we will begin using the DBT Command Line Interface.  We will then create and configure our first DBT project."
+order: 2
+category:
+  - dbt
+---
+
+## Lesson Overview
+
+In this lesson we will begin using the DBT Command Line Interface (CLI).  We will then create and configure our first DBT project and see some useful commands for validating and interrogating the project.
+
+## The DBT CLI
+
+The DBT CLI is used to manage and run your DBT project and the data transformations within.  As we mentioned in the[previous lesson](/dbt-introduction), DBT cloud is available for a more GUI driven experience, but we will be using the CLI tool within these lessons to build understanding.    
+
+For this lesson we will use our [training virtual machine](/running-training-environment) which should be downloaded and started as a first step.
+
+The training virtual machine already has dbt installed, so we can begin by simply running the _dbt_ command to check for a correct installation:
+
+```
+dbt 
+```
+
+Amongst the output you will see that we have a number of sub commands which perform different activities such as executing your DBT models, loading seed data or executing tests.  
+
+For each of these sub commands, you can use the _help_ flag to better understand the required parameters for each one:
+
+```
+dbt build --help
+dbt test --help
+dbt source --help
+dbt compile --help
+```
+
+Though you will quickly get used to the most common operations for building, testing and running your models, this online help is useful whilst learning DBT and moving into new areas.  This applies to many command line tools in the data engineering space.  
+
+## Versioning 
+
+The _version_ flag shows the installed version of dbt and if you are running on an out of date version.  It also shows the status of the individual warehouse adapters.  
+
+```
+dbt --version
+```
+
+Outputs:
+
+```
+installed version: 0.21.0
+   latest version: 0.21.0
+
+Up to date!
+
+Plugins:
+  - bigquery: 0.21.0
+  - snowflake: 0.21.0
+  - redshift: 0.21.0
+  - postgres: 0.21.0
+```
+
+Ordinarily these versions will stay in line when you upgrade DBT, but there may be situation where we you need to remain on a certain version of a warehouse adapter but move forward with the DBT version as your codebase matures.  For now, it is worth being aware that there is both a DBT version and a warehouse adapter version.  
+
+Because DBT is evolving very quickly, it is worth attempting to stay on the latest version where possible to have the most stable experience and avoid difficult upgrades later on.
+
+## Creating The Project
+
+The transformations that you develop will be logically grouped into a DBT project.  For instance, you may choose to have seperate projects for your order analytics, your website analytics and your financial analytics.  There are no hard and fast rules here, whatever works for you and your teams.  
+
+This is particularly true because we can share code between projects using [packages](https://docs.getdbt.com/docs/building-a-dbt-project/package-management) which we will explain in later lessons.
+
+We create a new project with the _dbt init_ command.  As we will use a Postgres database installed on the training virtual machine, here we will specify that the Postgres adapter should be used for the project:
+
+``` 
+dbt init pizzastore_analytics --adapter postgres
+```
+
+Creating the project should give a succesfull output such as:
+
+```
+Running with dbt=0.21.0
+Creating dbt configuration folder at /root/.dbt
+With sample profiles.yml for postgres
+
+Your new dbt project "pizzastore_analytics" was created! If this is your first time
+using dbt, you'll need to set up your profiles.yml file -- this file will tell dbt how
+to connect to your database. You can find this file by running:
+
+  xdg-open /root/.dbt
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+```
+
+As the output points out, one of our important next steps is to configure the DBT profile to describe which data warehouse to connect to and how.  In this instance, because we are using Postgres, we would need to set the connection details for our Postgres instance such as the host, port, username and password.  
+
+However, before doing that,  lets first explore the project structure which has just been created:
+
+```
+cd pizzastore_analytics 
+ls -la 
+```
+
+Which should give us something like this:
+
+```
+drwxr-sr-x 8 root root 4096 Nov 24 15:06 .
+drwxr-xr-x 1 root root 4096 Dec  6 14:02 ..
+-rw-r--r-- 1 root root   28 Nov 24 15:06 .gitignore
+-rw-r--r-- 1 root root  571 Nov 24 15:06 README.md
+drwxr-sr-x 2 root root 4096 Nov 24 15:06 analysis
+drwxr-sr-x 2 root root 4096 Nov 24 15:06 data
+-rw-r--r-- 1 root root 1339 Nov 24 15:06 dbt_project.yml
+drwxr-sr-x 2 root root 4096 Nov 24 15:06 macros
+drwxr-sr-x 3 root root 4096 Nov 24 15:06 models
+drwxr-sr-x 2 root root 4096 Nov 24 15:06 snapshots
+drwxr-sr-x 2 root root 4096 Nov 24 15:06 tests
+```
+
+Key folders here include: 
+
+- Models - Models are your core transformations which take source data and output destination tables or views;
+- Analysis - Analyses are temporary models which we need as intermediate steps, but which are not persisted to the database;
+- Data - Sometimes you will need static and seed data for your transformations;
+- Macros - Macros are reusable code blocks which are used by multiple transformations, giving us reuse;  
+- Snapshots - Snpashots of the database state;
+- Tests - Tests define the correctness of your transformation.
+
+We will learn more about all of these elements of DBT thorough the remainder of the course, but it is worth familiarising yourself with the project structure at this stage.  
+
+## dbt_project.yml file
+
+The dbt_project.yml is a configuration file in the root of the project, and allows to specify project level details such as the paths where various components are found.  
+
+```
+nano dbt_project.yml
+```
+
+And you will be presented with a file like this:
+
+```
+name: 'my_new_project'
+version: '1.0.0'
+config-version: 2
+profile: 'default'
+source-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+data-paths: ["data"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_modules"
+
+models:
+  my_new_project:
+    example:
+      +materialized: view
+```
+
+It is worth replacing the project name my_new_project with our project name pizzastore_analytics.  For some reason, DBT does not set this automatically.  
+
+The main reason we would usually touch this file is to set model specific configuration in the _models:_ section.  However, there are multiple ways to configure your models, meaning that this file is not always used.  
+
+For now, we can exit the file.  
+
+## dbt debug
+
+_dbt debug_ is a useful tool for running at this stage to check that your project is configured correctly and that you have connectivity to the databases in the linked profile.
+
+```
+dbt debug
+```
+
+Output:
+
+```
+Running with dbt=0.21.0
+dbt version: 0.21.0
+python version: 3.8.10
+python path: /usr/bin/python3
+os info: Linux-5.10.47-linuxkit-x86_64-with-glibc2.29
+Using profiles.yml file at /root/.dbt/profiles.yml
+Using dbt_project.yml file at /ecommerce_analytics/dbt_project.yml
+
+Configuration:
+  profiles.yml file [ERROR invalid]
+  dbt_project.yml file [OK found and valid]
+
+Required dependencies:
+ - git [ERROR]
+
+2 checks failed:
+Profile loading failed for the following reason:
+Runtime Error
+  Credentials in profile "default", target "dev" invalid: ['dbname'] is not of type 'string'
+```
+
+As you can see, this provided a useful summary of the project and attempted to connect to the database to validate the connectivity details.  Because we haven't yet configured our database or profile, we see an error. 
+
+
+## Populate profiles.yml script 
+
+So we can progress, lets enter some database credentials into the profiles.yml file.  
+
+```
+nano ~/.dbt/profiles.yml
+```
+
+Delete the existing content and paste these details into the file:
+
+```
+default:
+  outputs:
+
+    dev:
+      type: postgres
+      threads: 1
+      host: localhost
+      port: 5432
+      user: postgres
+      pass: postgres
+      dbname: pizzastore
+      schema: dev_pizzastore
+
+    prod:
+      type: postgres
+      threads: 1
+      host: localhost
+      port: 5432
+      user: postgres
+      pass: postgres
+      dbname: pizzastore
+      schema: prod_pizzastore
+
+  target: dev
+```
+
+We will explain the contents of this file in more details in the next lesson.  For now, this step allows us to proceed with the lesson by having a well formed profiles file.  
+
+## dbt parse
+
+_dbt parse_ is a useful command to use during your development workflow.  
+
+It will verify that all of your source code is correctly structured, including your profiles.yml file that we just populated.  
+
+Integrating frequent calls to _dbt parse_ into your workflow can speed up the development cycle rather than waiting for long migrations to run only to find that you accidently introduced a typo into one of your transformation files.
+
+```
+dbt parse
+```
+
+Output:
+
+```
+Running with dbt=0.21.0
+14:28:13 | Start parsing.
+14:28:13 | Dependencies loaded
+14:28:13 | ManifestLoader created
+14:28:14 | Manifest loaded
+14:28:14 | Manifest checked
+14:28:14 | Flat graph built
+14:28:14 | Manifest loaded
+14:28:14 | Performance info: target/perf_info.json
+14:28:14 | Done.
+```
+
+As you can see, some timing information is also included which may be useful if you have very large projecsts and wish to optimise the build time.  
+
+
+## dbt ls
+
+_dbt ls_ lists all of the "resources" defined in your model, where resources are things like models, tests, analysis, seed data.  This can be a good way to get an overview of the entire project and to ensure that your expected resources are correctly identified by DBT.  
+
+```
+dbt ls
+```
+
+Output:
+
+```
+my_new_project.example.my_first_dbt_model
+my_new_project.example.my_second_dbt_model
+my_new_project.schema_test.not_null_my_first_dbt_model_id
+my_new_project.schema_test.not_null_my_second_dbt_model_id
+my_new_project.schema_test.unique_my_first_dbt_model_id
+my_new_project.schema_test.unique_my_second_dbt_model_id
+```
+
+These resources are examples transformations and tests which were created when we ran _dbt init_.  They are useful to copy from as you begin to build out your own code, but will likely be deleted early in the process.
+
+## Summary
+
+In this lesson we explored the dbt command line tool.  We created a project and then used various dbt command line tools to validate and interrogate the project.
+
+We also looked at dbt_project.yml which controls project level configuration, and profiles.yml which describes your data warehouse connection details.  
+
+At this time, the project isn't connected to the database because the database we configured does not exists.  In the next lesson we will create this database and form a connection between DBT and Postgres for the first time.  

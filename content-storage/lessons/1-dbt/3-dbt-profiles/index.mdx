@@ -1,0 +1,270 @@
+---
+tocTitle: TBC
+title: Configuring DBT Profiles
+slug: configuring-dbt-profiles
+custom_excerpt: In this lesson we will learn more about the DBT profile system and best practices for managing profiles for maintainable code.
+order: 3
+category:
+  - dbt
+---
+
+## Lesson Overview
+
+In this lesson we will learn more about DBT profiles and explain how to configure and use them.  We will also share some best practices for managing profiles for optimal development workflows. 
+
+## About Profiles
+
+The main purpose of DBT profiles is to describe the connection details for your data warehouses - the database type, hostname, username and password for instance.    
+
+A data engineer might be working on multiple projects with different warehouses, so might have multiple profiles - one for each warehouse configured in his local profiles.yml file.  
+
+In addition, you may also have seperate development, test and production databases, these could be saved as three seperate _targets_ within the relevant DBT profile.  
+
+Profiles are stored outside of a given project, and managed outside of from the model code for a number of reasons:
+
+- The connection details are a seperate concern to the model code which you write.  You may for instance wish to run the same set of models in seperate development, test and production accounts and in seperate database instances around the business;
+
+- Profiles may be specific to an individual user.  You may for instance have the common workflow where seperate developers work in their own databases during development, then progress to shared databases during test and production;
+
+- Profiles may contain sensisitive information such as usernames and passwords.  It therefore makes sense to maintain them outside of the main source control repository and store in the developers home folder or other secure location. 
+
+Because profiles and projects are managed seperately, we need to specify which profile we are using when we define the project.  This is configured in the _dbt_project.yml_ file which we saw earlier.  
+
+## Viewing The Profile File
+
+When we created the project in lesson 1, a default file _~/dbt/profiles.yml_ was created in the users home directory.  We then replaced some of the placeholders in square brackets with actual values to allow us to succesfully parse and validate the project.  
+
+We can now revisit the profiles.yml file like so:
+
+```
+cd ~/.dbt
+nano profiles.yml
+```
+
+As you will see, the _profiles.yml_ file contains seperate targets for dev and prod environments, with _dev_ identified as the default target at the bottom: 
+
+```
+default:
+  outputs:
+
+    dev:
+      type: postgres
+      threads: 1
+      host: localhost
+      port: 5432
+      user: postgres
+      pass: postgres
+      dbname: pizzastore
+      schema: dev_pizzastore
+
+    prod:
+      type: postgres
+      threads: 1
+      host: localhost
+      port: 5432
+      user: postgres
+      pass: postgres
+      dbname: pizzastore
+      schema: prod_pizzastore
+
+  target: dev
+```
+
+## Adding A Target
+
+We will add a new target to demonstrate the concept of targets later on.  This target will exist on the same postgres host running in the training virtual machine, will be a seperate database. 
+
+Add the following code to your profiles.yml file between the dev and prod environments:
+
+```
+test:
+    type: postgres
+    threads: 1
+    host: localhost
+    port: 5432
+    user: postgres
+    pass: postgres
+    dbname: pizzastore
+    schema: test_pizzastore
+```
+
+This completes the configuration for our development, test and production databases.  The dev database is the default target, and all of these are stored under a profile named _default_.
+
+## Connections To Other Warehouses
+
+Out of the box, DBT connects to a number of data warehouses including Redshift, Snowflake, Postgres and BigQuery.  When we initially created our project, we specified the postgres adapter:
+
+```
+dbt init ecommerce_analytics --adapter postgres
+```
+
+If you don't specify anything by default you will get a project configured to talk to <a href="https://cloud.google.com/bigquery">Bigquery</a>.  
+
+We could alternately have specified:
+
+```
+dbt init ecommerce_analytics --adapter snowflake
+dbt init ecommerce_analytics --adapter bigquery
+dbt init ecommerce_analytics --adapter redshift
+```
+
+If we re-run these commands now, it will not overwrite the Postgres connected profile we have previously created.  The _adapter_ argument only creates a profile if one does not already exist.  
+
+## Creating Our Target Database
+
+For the rest of this course, we will use a Postgres data warehouse running on our [training virtual machine](/running-training-environment).  The commands and the steps we show will be exactly the same for other data warehouses such as Snowflake or Redshift.
+
+The [training virtual machine](/running-training-environment) already has Postgres installed, but it is not running  and does not currently have any database cfreated.  We will therefore need to start the instance and create the database to use for the remainder of the lesson.
+
+We can start the Postgres instance with the following command:
+
+```
+/etc/init.d/postgresql start
+```
+
+Outputs:
+
+```
+* Starting PostgreSQL 12 database server
+```
+
+We can then log into the Postgres database using the default username:  
+
+```
+psql --user postgres
+```
+
+Which should place us at a psql prompt:
+
+```
+psql (12.9 (Ubuntu 12.9-0ubuntu0.20.04.1))
+Type "help" for help.
+
+postgres=#
+```
+
+Earlier, we configured our DBT profile to expect a password for the default postgres user because DBT gets confused with an empty password.  Let's update our database user to expect this same password so the two are in line, by executing the following at the psql command prompt:
+
+```
+alter user postgres with password 'postgres';
+```
+
+Then we can create the database with 3 seperate schemas, again at the psql command prompt:
+
+```
+create database pizzastore;
+\c pizzastore
+create schema dev_pizzastore;
+create schema test_pizzastore;
+create schema prod_pizzastore;
+```
+
+We can exit the Postgres client by issuing the exit command:
+
+```
+exit
+```
+
+This should place you back at the shell prompt within the training virtual machine.  
+
+## Validating The Setup 
+
+We can now re-validate these connection details with _dbt debug_ as shown in the previous lesson:
+
+```
+dbt debug
+```
+
+Which should output that all three database connections are healthy:
+
+```
+Running with dbt=0.21.0
+dbt version: 0.21.0
+python version: 3.8.10
+python path: /usr/bin/python3
+os info: Linux-5.10.47-linuxkit-x86_64-with-glibc2.29
+Using profiles.yml file at /root/.dbt/profiles.yml
+Using dbt_project.yml file at /ecommerce_analytics/dbt_project.yml
+
+Configuration:
+  profiles.yml file [OK found and valid]
+  dbt_project.yml file [OK found and valid]
+
+Required dependencies:
+ - git [OK found]
+
+Connection:
+  host: localhost
+  port: 5432
+  user: postgres
+  database: pizzastore
+  schema: dev_pizzastore
+  search_path: None
+  keepalives_idle: 0
+  sslmode: None
+  Connection test: [OK connection ok]
+
+All checks passed!
+```
+
+We can also validate other targets like so:
+
+```
+dbt debug -t prod
+```
+
+Outputs:
+
+```
+Running with dbt=0.21.0
+dbt version: 0.21.0
+python version: 3.8.10
+python path: /usr/bin/python3
+os info: Linux-5.10.47-linuxkit-x86_64-with-glibc2.29
+Using profiles.yml file at /root/.dbt/profiles.yml
+Using dbt_project.yml file at /ecommerce_analytics/dbt_project.yml
+
+Configuration:
+  profiles.yml file [OK found and valid]
+  dbt_project.yml file [OK found and valid]
+
+Required dependencies:
+ - git [OK found]
+
+Connection:
+  host: localhost
+  port: 5432
+  user: postgres
+  database: pizzastore
+  schema: prod_pizzastore
+  search_path: None
+  keepalives_idle: 0
+  sslmode: None
+  Connection test: [OK connection ok]
+
+All checks passed!
+```
+
+We have now configured our profiles file and have connectivity between our DBT project and the Postgres database. 
+
+## Threads
+
+In the DBT profile described above, note that we can specify a number of threads for each database target.  This is the maximum number of parallel activities that DBT will execute at any one time. 
+
+Though executing more work in parallel is generally a good thing, increasing this to an arbitrarily high number isn't necessarily the best thing to do.  It will add extra load to the machine running the DBT client, the data warehouse, and perhaps even result in a net slowdown due to too much parallel work.  In environments such as Snowflake where we have conumption based billing, this may also have a cost implication if we need to create more higher powered virtual warehouses.
+
+This said, increasing the number of threads is a valid option if you are looking to improve the speed and latency of your data transformations.  
+
+Note that your DBT transformation may consist of a set of dependent steps.  Threads will respect these dependencies meaning that you may also be limited in the amount of parralelism that can be achieved if you have a long chain of dependent  transformations to resolve.  
+
+## Summary
+
+In this lesson, we learnt about the _profiles.yml_ script, and how it is bootstrapped for different warehouses at project creation time.  
+
+We then created three new database schemas in our Postgres instance and pointed the DBT profiles.yml file towards them.  
+
+We finally validated this connections using _dbt debug_.
+
+Finally, we briefly looked at the threads parameter which can influence the amount of parallelism when we are executing our DBT transformations. 
+
+In the next lesson, we will begin running our first transformations against these databases.

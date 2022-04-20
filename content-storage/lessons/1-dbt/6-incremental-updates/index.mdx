@@ -1,0 +1,32 @@
+---
+tocTitle: Incremental Updates
+title:  Incremental Updates
+slug: dbt-incremental-updates
+custom_excerpt: In this lesson we will learn abuout DBT incremental updates.
+order: 6
+category:
+    - dbt
+premium_content: true
+---
+
+## Lesson Overview
+
+In this lesson we will learn abuout DBT incremental update feature, which makes.
+
+## What Are Incremental Updates
+
+As we have seen in previous lessons, DBT will build new tables or views from existing tables and views, potentially in a chain of dependencies.
+
+By default, each time DBT creates the new objects, it drops and then rebuilds the table from scratch.  
+
+This makes DBT very simple to reason about, and each time we can be sure we are getting fresh up-to-date data. 
+
+There are however a number of downsides of this approach:
+
+- It can be slow, as we are recomputing all of the queries and rebuilding all of the tables; 
+- It can create significant load on the database;
+- This database load can in turn result in additional costs if you are paying for compute; 
+
+Incremental views enable us to update our views based only on deltas.  
+
+This is quite a simple ask, but does result in the data engineer taking on additional complexity in ensuring that their tables remain up to date and containing accurate data. 

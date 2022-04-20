@@ -1,0 +1,44 @@
+---
+title: Why Event Driven Architecture Improves Audit & Compliance
+slug: why-event-driven-architecture-improves-audit-compliance
+date_published: 2020-11-16T10:27:37.000Z
+date_updated: 2021-09-03T14:39:51.000Z
+order: 143
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Imagine we have a database table of customer details which sits behind a typical web application:
+IDNameAgeGenderAddress1Ben Smith33Male1 High Street, London2Sue Jones35Female1 Low Street, Manchester
+The majority of screens in the majority of business applications allow direct changes to this table, for instance by overwriting the data with updates, or deleting rows.  
+
+When you click *Save* on a web form, perhaps some SQL is executed on the database such as *UPDATE NAME = "Sue Wilson" WHERE ID 2.*  The customers old name "Sue Jones" is essentially lost to the depths of the database transaction logs and your application log files.  
+
+Statements like this run trillions of times per day across the world, and each time a great deal of useful information is lost.  
+
+- What was the old value?
+- When was the old value captured?
+- When was the new value captured?
+- Who captured the old value?
+- Who captured the new value?
+
+This information is valuable for lots of operational reasons, but especially for audit and compliance, where we need to do know exactly what data changed, when, why, and by whom.  
+
+Where this type of information clearly needs to be maintained, this will often explicitly be added using techniques such as Type 4 [Slowly Changing Dimension](https://en.wikipedia.org/wiki/Slowly_changing_dimension) tables which maintain a history table with timestamps.  Information such as the username of the operator who entered the new information could also be logged here.  
+IDNameAgeGenderAddressUpdated1Ben Smith33Male1 High Street, London1st Jan 20122Sue Jones35Female1 Low Street, Manchester1st Jan 20192Sue Wilson35Female1 Low Street, Manchester3rd Feb 2020
+The problem is that this requires recognising that we need to maintain history and then explicitly coding for it.  Slowly Changing Dimensions are not an inherent property of our architecture or database, so by default we will be losing data on each transaction &#8211; which is a compliance nightmare.  
+
+ How Event Driven Architectures Help
+
+Event Driven Architectures consist of loosely coupled services that respond to real world events.  In the above example, an event could be *Name Changed*, and all of the services which need to respond to that event will subscribe to it and respond accordingly, updating state and triggering necessary actions.  If this were a bank for instance, we might wish to save the new name and re-issue the debit card in response to the event.  
+
+For various reasons, modern "Event Driven" architectures are inherently better at solving the "lost data" problem than traditional CRUD architectures.
+
+- Event Based Architectures will typically incorporate some streaming engine such as Kafka, which acts as a transaction log describing how the table was built up over time using inserts, updates and deletes.  This can be maintained for as long as necessary, making it a perfect audit log for us to work with.  
+- As well as Kafka maintaining this history, it is possible to journal this transaction log to disk for a further compliance and resilience point.  So we can also snapshot what our transaction log looked like at certain points in history for an additional check.  
+- The inclusion of a messaging platform such as Kafka gives us an opportunity to record where updates came from for better data provenance and lineage tracing.  For instance, we can see that some updates came via our call centre topics and some via our mobile application topics.  Header details could be included in the message to show who the originating user was, perhaps incorporating some digital signature.  This additional lineage information is much better than a typical web application which might use a common database username and password which all application users are ultimately sharing.  
+- Using these event logs, it is essentially possible to rebuild your database state by replaying messages in the order by which they were received.  Because of the [stream-table duality](https://www.michael-noll.com/blog/2018/04/05/of-stream-and-tables-in-kafka-and-stream-processing-part1/#the-stream-table-duality), we can be sure that we have an accurate table as it looked in the past should it be required to do this.  
+- Because services are written to process inbound events, they are more naturally persisted in this way too. In the old CRUD style coding, we would receive a new "Customer" record and naturally reach for persisting that to a relational database.  In the example above, we would receive delta *Name Changed* events which would be very easy and natural to persist even if we wish to maintain a Customer domain object with the latest aim. 
+- In order to add the concept of attribute level auditing and change history, a traditional J2EE or PHP web application will often need to calculate which fields have been updated by looking at the inbound request and comparing with the fields in the database.  This would have a lot of overhead.  Coding in the Event Driven Architecture style will usually be based around processing these delta events, which will make it much easier to implement compliance checks and capture the information we need.  
+
+As mentioned, it's perfectly possible to lose information by accepting events and translating them back to destructive CRUD updates, but because of the additional transaction logs, the coding styles and the way that event based architectures persist data, we start off in a much stronger position for audit and compliance in relation to how our data was built up over time.  

@@ -1,0 +1,56 @@
+---
+title: Is Real Time Analytics Possible With A Data Warehouse
+slug: real-time-analytics-data-warehouse
+date_published: 2021-10-20T09:12:38.000Z
+date_updated: 2021-10-20T09:12:38.000Z
+order: 113
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Data Warehouse technology has been the beating heart of business intelligence for many decades.  
+
+Typically, these Data Warehouses act as the centralised repository for structured data for entire businesses or departments, and are populated with data from various line of business applications.  
+
+The aim of this is to give the business a holistic and combined view of the entirety of the businesses data.  The warehouse would store the data in a format and structure suitable for reporting and analytics purposes, then serve up the data to data analysts and business users through reports and dashboards.  
+
+As businesses are looking to use their data more intelligently, this model is starting to creak and Data Warehouse technology in particular is being placed under more pressure to perform.  More and more diverse data is being placed into these warehouses, and companies would like to perform more complex analytics and data science activities, and get their answers faster.  
+
+If a business wants to raise their analytics game today they have a choice.  Do they try to push the limits of Data Warehouse model and technology, or do they look at new approaches such as Data Lake or Streaming Analytics to allow them to meet their complex and demanding requirements.  
+
+## Query Performance
+
+There is no denying that Data Warehouses can perform extremely well in terms of querying data.  Modern Cloud Warehouses such as Snowflake, Redshift and BigQuery can scale to enormous volumes of data and provide complex answers very quickly.  It's still remarkable to see how a database can return an aggregation over millions or billions of rows in the blink of an eye.  
+
+Fast query performance over large data sets does not however equal real time.  To really acheive real time perforamnce, we need to have high and predictable performance across the entire data lifecycle:
+
+- Real Time Ingestion - Getting data from the source and into the data store;
+- Real Time Transformation - Transforming and decorating the data ready for analysis;
+- Real Time Analytics - High performance interogration of the datasets including complex queries over both small and large batches of data;
+- Real Time Responses - Triggering downstream actions when certain conditions are met. 
+
+In this instance, Data Warehouse technology starts to look less real-time, as delays are incurred at every step of the process.  By the time you have ingested your data, prepared it, analysed it and pushed the downstream action, you can easily be in the realm of minutes.  Of course this is fine for the vast majority of business use cases, but it does start to stretch the definition of "real time".  
+
+## Batch Approach
+
+We have discussed this at length on the blog, but almost the entire Data Warehousing world is based on batch processing.  Data files are delivered as batches ready for ingestion, and then ELT processes run on batches of records periodically.  To then do something such as trigger alerts or push data downstream when a business critical situation occurs, another batch job might be implemented which runs periodically.  
+
+As soon as we introduce a batch step, we have effectively failed to deliver on the real time requirement.  When we have multiple, we are way off base.  
+
+## Small Batch Processing
+
+Column Oriented data warehouses are designed for performant queries over large datasets.  However, in real time scenarios, we are typically interested in individual records and small batches of data as data streams in.  For instance, when a new order is placed, we may wish to check previous orders for the customer to see if a limit has been reached.  
+
+When we are accessing individual records in the database, this is a use case more approprioate for an OLTP/transactional relational database management systems than data warehouses.  OLAP Data Warehouses often will perform relatively poorly on these types of queries.  It is therefore not the right platform for implementing highly granular stream processing.  
+
+## Predictability
+
+Real Time isn't just perforabout low latency, it's also about predictabile performance.  Building around the Data Warehouse and ETL model, there are simply too many opportunities and lots of unpredictability in how the end to process will perform.  This means that we cannot build business critical services such as fraud checks, safety systems, or user experience personalisation on this technology stack.  
+
+## Innovation In This Area
+
+Data warehouses are attempting to raise their game in multiple areas.  A modern database such as Snowflake for instance implements continuous ingestion which scales to small batches, and implements streams which give us insight when data is being created in source tables.  Clickhouse, which Timeflow uses has a very powerful materialised view concept.  Generally though, Data Warehouses are still batch based and all of the above hold.   
+
+## Conclusion
+
+Our conclusion is that Data Warehouse technology is not an appropriate solution for real time analytics.  Of course they can query large volumes of data withing performance, but there are too many places in the process where delays creep in and too much dependency on batch processing to build real time stream processing stacks within data warehouses.  

@@ -1,0 +1,93 @@
+---
+tocTitle: TBC
+title: Introduction To Snowflake
+order: 1
+slug: introduction-to-snowflake
+custom_excerpt: "In this lesson we will introduce Snowflake and describe some of it's key differentiators and architectural features."
+category:
+    - snowflake
+---
+
+## Lesson Overview
+
+In this lesson we will introduce Snowflake and describe some of it's key differentiators and architectural features.
+
+## Data Warehousing
+
+Data Warehouses are large centralised databases which are typically used to combine data from multiple line of business applications and data sources.  For instance, we might opt to combine all of the data from sales, marketing, finance and HR into a centralised Data Warehouse for a joined-up view across the entire business.  
+
+After ingesting and organising this data, the Warehouse is then usually responsible for exposing it to business stakeholders by serving reports, dashboards, and interactive analytics for data analysts, usually through third party tools for reporting or business intelligence.   
+
+Data Warehouses are designed to ingest and store large volumes of data, and to be able to serve the resulting business intelligence workloads with high performance.  This is in contrast with transactional databases such as MySQL or Postgres which are designed for transactional workloads, but less suited for analytics over big data.  
+
+## What Is Snowflake
+
+Snowflake is a modern Data Warehouse designed for the cloud era.  
+
+Though Data Warehousing is a very mature field, Snowflake's cloud native approach brings a number of distinctive features which has driven it's rapid adoption in industry.  We will discuss these below.  
+
+### Software As A Service
+
+Snowflake is delivered through an entirely Software As A Service model, with no software or servers to run.  This is an innovation in the data space, as until now, customers would be reluctant to hand over their strategic data entirely to a third party.  
+
+### Simplicity 
+
+In addition to the fully SaaS deployment model, Snowflake remains very simple in terms of tuning parameters and management overhead.  Furthermore, it does this without compromising performance.
+
+### Usage Based Billing 
+
+Snowflake moves beyond this to genuine usage based billing, whereby you pay by the second for the compute resources that you use, and by the byte for the storage that you consume. This means there is no need for overprovisioning.  This pricing model is compelling compared to the traditional vendors who have high per CPU core billing models or require 24x7 server capacity to remain available.  
+
+### Performance 
+
+Snowflake makes a number of innovations around performance which for some benchmarks make it the most highest performing data warehouse on the market.
+
+### Separation Of Compute & Storage 
+
+Snowflakes architecture loosely couples the storage from the compute.  This allows us to scale them indepdendentlty of each other, for instance having very large storage volumes with very small processing capacity.  The seperation also allows us to scale down compute capacity when it's whilst keeping the data available.  
+
+
+## Snowflake Architecture
+
+The Snowflake architecture is an evolution over traditional data warehouses, modernised to take advantage of properties of the cloud.  Some of the notable properties of this architecture include:
+
+
+### Software As A Service
+
+As discussed, Snowflake is a fully Software As A Service platform.  This means that there is nothing to deploy and manage on your own servers or in your own cloud accounts. This is in contrast to a platform such as Databricks which manages the "control plane" but execute the processing and stores the data in your own account.  
+
+### Cloud Hosted 
+
+Though Snowflake is a fully SaaS model, behind the scenes it is running in one of the major cloud providers infrastructure - AWS, Azure or GCP. Though this is somewhat abstracted away from the Snowflake user or administrator, some appreciation of those environments is useful.
+
+### Separation Of Storage And Compute
+
+Separation of Storage and Compute is one of the most commonly cited benefits of Snowflake.  
+
+In a traditional database such as Oracle or MySQL, the two were historically tied together. If we wanted more storage, we would add another node which stored data locally, and were usually be required to buy extra licenses from the vendor. Things were arranged this way due to the low latency requirements of transactional systems.  
+
+Over the years, a few things have changed with regards to this picture. Firstly, compute and network performance has improved to the extent that we can now realistically store data across the network from the compute nodes in order to decouple the two. With data warehousing workloads such as Snowflake, we can also tolerate some increased latency of reading over the network. This makes decoupling storage from the compute viable.  
+
+What this seperation means is that that the storage and the compute can scale independently. For instance, we could have an extremely large dataset which takes petabytes of data, and a very small data warehouse. On the flip side, we could have a a very small dataset and a very large processing tier to meet the needs of our business. This processing tier could then of course grow and shrink multiple times throughout the day, independently of the storage. This allows businesses to completely rightsize their databases, and save significant costs in doing so.
+
+### Shared Disk & Shared Nothing
+
+This arrangement of separating out data into a different tier which is then shared multiple warehouses is referred to as a "Shared Disk" architecture. At the same time, the practice of running multiple virtual warehouses is sometimes referred to as a Shared Nothing architecture. This hybrid of shared disk and shared nothing is really the secret sauce of Snowflake which is supporting it's rapid adoption.
+
+### Tiered  Architecture
+
+The Snowflake Architecture is best thought of in tiers like so:
+
+At the bottom level, we have the storage tier. This is provided by the cloud provider, through a service such as AWS S3 or Azure Blob Storage. As a Snowflake user or administrator, you won't be directly interacting with these services, though it's definitely worth having an appreciation of these services, how they work, the reliability guarantees they provide etc. As a Snowflake administrator, you may also be loading data from or extracting data to these cloud services.  
+
+At the second level, we have a cluster of compute nodes which are responsible for executing the queries, data manipulations and other processing. This cluster is referred to as a Virtual Warehouse, and will typically serve one user or group of users. It is also possible and typical to create multiple Virtual Warehouses, each of which may be long lived, or be created for a short period of time to execute a particular task.  
+
+At the top tier, we have a set of cloud services which manage things such as authentication, security and access control, metadata etc. These services are internal to Snowflake, but again it's worth understanding what these services are responsible for as occasionally they will touch on your day to day work.
+
+## Summary
+
+In this lesson we introduced Data Warehousing and specifically Snowflake.  
+
+We discussed some of the compelling features of Snowflake and touched on some of it's architectural properties that underlie these features.
+
+In the next lesson, we will discuss Snowflake account types and open the free trial which we will use for the remainder of the course.  

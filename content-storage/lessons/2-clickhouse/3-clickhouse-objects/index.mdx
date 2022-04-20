@@ -1,0 +1,106 @@
+---
+tocTitle: TBC
+title: Administering Database Objects
+slug: clickhouse-database-objects
+custom_excerpt: In this lesson we will learn about some of the core database objects in Clickhouse.
+order: 3
+premium_content: true
+category:
+  - clickhouse
+---
+
+## Lesson Overview
+
+In this lesson we will learn about some of the core database objects in Clickhouse including tables, views, functions, users and roles.  This will be a quick overview over each of the main categories, many of which will be described in more detail in subsequent lessons. 
+
+## Tables
+
+Tables are of course the central concept of any relational database.  They can be created using the CREATE table command with a series of typed column  names:
+
+```
+create table pizza_ingredients( id integer, description varchar, price integer );
+```
+
+The table can be dropped using the drop command:
+
+```
+drop table pizza_ingredients;
+```
+
+## Views 
+
+Views provide a convenience function for executing common queries.  They do not store data, but instead execute the defined query against the underlying table each time the view is accessed.
+
+Views can be created like so:
+
+```
+create view high_priced_ingredients as ( select * from pizza_ingredients where price > 90 )
+```
+
+The view can be dropped using the drop command:
+
+```
+drop view high_priced_ingredients;
+```
+
+## Functions
+
+Functions allow you to create simple pieces of business logic in SQL which can be executed inline within queries:
+
+```
+CREATE FUNCTION parity_str AS (n) -> if(n % 2, 'odd', 'even');
+```
+
+It is also possible to define external functions in a programming language which can be incorporated into your query. 
+
+## Dictionaries 
+
+Dictionaries are sets of key and value pairs which are used as part of your queries, such as:
+
+```
+M --> Male
+F --> Female
+```
+
+```
+AMER --> America
+EMEA --> Europe, Middle East, Asia
+```
+
+Clickhouse provides a special object type for Dictionaries in order to provide some more efficient optimisations rather than simply creating and joining to lookup tables:
+
+```
+create dictionary genders ( )
+```
+
+
+## Users
+
+Clickhouse users are the real world people or processes which are interacting with your password.  It is of course best practice to issue users with their own usernames and passwords for auditing and control purposes:
+
+```
+CREATE USER benjaminwootton IDENTIFIED WITH sha256_password BY 'qwerty';
+```
+
+## Roles 
+
+Roles are part of the permission.  A given role gets assigned a number of permissions, such as the ability to query a , and then users are granted the role.  
+
+```
+CREATE ROLE accountant;
+GRANT SELECT ON db.* TO accountant;
+```
+
+## Quotas
+
+Quotas allow us to apply limits to what individual users or roles can do with the database.  For instance, we may wish to limit the number of queries that certain users or groups of users can do in a given time window, to ensure they do not.  
+
+```
+CREATE QUOTA Q1 FOR INTERVAL 15 month MAX queries = 100 TO CURRENT_USER;
+```
+
+## Summary
+
+In this lesson, we created basic database objects within Clickhouse and showed the consistent pattern for creating, altering and dropping them.  
+
+In the next lesson, we will look at the role based access control and permission model within Clickhouse which controls how users can access and interact with these objects.  

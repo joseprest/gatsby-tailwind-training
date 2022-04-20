@@ -1,0 +1,66 @@
+---
+tocTitle: TBC
+title: Permission Model
+slug: snowflake-permission-model
+custom_excerpt: In this lesson we will learn about Snowflake billing.
+order: 4
+category:
+    - snowflake
+premium_content: true
+---
+
+
+## Lesson Overview
+
+In this lesson we will learn about the Snowflake permission model, including users and roles, and  how they are used to control access to various data within your databases.
+
+## Role Based Access Control
+
+As with many databases, Snowflake has a Role Based Access Control Model.  Permissions to read or write certain tables are granted to roles, and roles are granted to people.
+
+Exanple roles might be:
+
+- MANAGER
+- SALESPERSON
+- AGENT
+- CASHIER
+- ANALYST
+- DIRECTOR
+
+A particular set of permissions might be:
+
+- MANAGER
+
+
+
+
+## Creating Roles 
+
+Roles are created using SQL 
+
+```
+create role storemanager;
+create role storeemployee;
+```
+
+## Granting Permissions To Roles
+
+We then grant permissions to the manager role.
+
+```
+alter role storemanager add 
+alter role storemanager add 
+```
+
+## Granting Permissions To Users
+
+```
+alter user benjamin grant role manager
+```
+
+
+## Summary 
+
+In this lesson we looked at the Snowflake permission model.  
+
+

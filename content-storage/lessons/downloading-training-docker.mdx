@@ -1,0 +1,73 @@
+---
+tocTitle: Running The Training Environment
+title: Running The Training Environment
+slug: running-training-environment
+order: 1
+custom_excerpt: We offer a training "virtual machine" based on a Docker image which can be used to follow our labs. Though it isn't essential, we encourage the use of this when following our lessons, as it contains many important pre-requisite tools and libraries, and gives everyone a consistent base to work from in terms of folder structures and versions.
+category:
+  - general
+---
+
+## About The Training Environment
+
+We offer a training "virtual machine" based on a [Docker](http://docker.com) image which can be used to follow our labs. Though it isn't essential, we encourage the use of this when following our lessons, as it contains many important pre-requisite tools and libraries, and gives everyone a consistent base to work from in terms of folder structures and versions. This then allows you to concentrate on the most important elements of the training rather than environment issues.
+
+## Pre-Requisites
+
+You will need to install Docker for your platform. Instructions can be found <a href="https://docs.docker.com/get-docker/">here</a>. The training environment has been tested on Linux, MacOS and Windows.
+
+## Running The Environment
+
+After installing Docker, you can run the environment using the following command:
+
+```
+docker run --cap-add=SYS_NICE --cap-add=NET_ADMIN --cap-add=IPC_LOCK --rm -i -t timeflowsystems/timeflow-training-vm bash
+```
+
+This should place you at a command prompt where you can begin to complete <a href="/">our lessons</a>. Note, the number after the @ symbol may be different on your machine.
+
+```
+root@25254db83b8e:/#
+```
+
+## About tmux
+
+To complete the courses, we will need to run multiple command shells on the _same_ virtual machine. To acheive this, we use a utility called _tmux_ which will allow us to open multiple shells within the training virtual machine and move between them.
+
+Though this makes things slightly more complex, tmux is also a useful skill to learn for all data engineers who will often find themselves working at the command line and needing to run multiple processes in parallel.
+
+tmux can be started with the following command from within the virtual machine:
+
+```
+tmux
+```
+
+To split the window in two horizontally we can press:
+
+```
+Ctrl+b “
+```
+
+To split vertically we can press:
+
+```
+Ctrl+b %
+```
+
+Then to move between the two windows we can press:
+
+```
+Ctrl+b o
+```
+
+To close a shell, type _exit_:
+
+```
+exit
+```
+
+We reccomend spending 5 minutes creating and moving between tmux windows before starting the course in order to build comfort with it.
+
+## Feedback
+
+If you have any issues with the training environment or the individual commands in the course content, please <a href="contact">get in touch</a>.

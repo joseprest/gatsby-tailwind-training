@@ -1,0 +1,172 @@
+---
+tocTitle: TBC
+title: Clickhouse Role Based Access Control (RBAC)
+slug: clickhouse-creating-users-roles
+custom_excerpt: In this lesson we will look at the Clickhouse users, role and permission model
+order : 4
+category:
+    - clickhouse
+---
+
+## Lesson Overview
+
+In this lesson we will look at the Clickhouse Role Based Access Control (RBAC) model which is used to secure and control access to data and allowed database operations.  
+
+It assumes that the Clickhouse server has been started as per [this earlier lesson](/connecting-to-clickhouse).
+
+## Role Based Access Control
+
+Role Based Access Control (RBAC) is a popular model for controlling access to data, which is commonly used in both applications and databases including Clickhouse.  
+
+It involves giving users one or more roles (such as manager, call handler, CEO or salesperson), and then granting privileges to those roles such as the ability to see certain tables or rows, and whether or not they have read or write access.  
+
+Clickhouse users are given default roles, which they are switched to when they first login.  They can then change between their granted roles. 
+
+This model will be demonstrated during this lesson.  
+
+## XML vs SQL configuration
+
+There are two models for administering role based access control in Clickhouse.  The legacy route was by changing permissions statically in XML files.  The newer, reccomended route is to use SQL commands to administer them via the client.  
+
+
+## Users
+
+By default, Clickhouse comes with one user configured named _default_ when it is first started.  
+
+It is of course best practice to create individual user accounts which can be logged and controlled individually.  These can be created and administered using SQL:
+
+```
+create user if not exists benjaminwootton identified with plaintext_password by 'password321';
+```
+
+If you try to execute this command in your [training virtual machine](/running-training-environment), you will find that the default user is not able to administer users on a new install of Clickhouse using SQL.  
+
+```
+Code: 497. DB::Exception: Received from localhost:9000. DB::Exception: default: Not enough privileges. To execute this query it's necessary to have grant CREATE USER ON *.*. (ACCESS_DENIED)
+```
+
+This is because the SQL option is currently turned off by default for security purposes.  
+
+The way to enable this is using the Clickhouse users.xml file.  Once this has been turned on in the XML file, we can grant the permission to create users to other users in the system via SQL.  This is purely a security feature when bootstrapping a new Clickhouse server.
+
+We can edit the users.xml file in the following location:
+
+```
+nano /etc/clickhouse-server/users.xml
+```
+
+And uncomment the line regarding access_management:
+
+```
+<users>
+    <default>
+            <access_management>1</access_management>
+```
+
+Uncommenting and setting this flag to 1 effectively says that the default user has permission to create new users and grant permissions to them.  
+
+We can then restart the Clickhouse server, being careful to reference the main configuration file, which in turn will reference the users.xml file we have just edited:
+
+```
+clickhouse-server -C /etc/clickhouse-server/config.xml
+```
+
+If we then attempt to recreate our user from the Clickhouse client:
+
+```
+create user if not exists benjaminwootton identified with plaintext_password by 'password321';
+```
+
+We should see that it has been succesfully created:
+
+```
+CREATE USER IF NOT EXISTS benjaminwootton IDENTIFIED WITH plaintext_password BY 'password321'
+
+Query id: b19e48ab-f7bd-48bf-a313-e0eec6b22a0c
+
+Ok.
+
+0 rows in set. Elapsed: 0.004 sec.
+```
+
+The new user will then be able to login at the client with the credentials specified.
+
+## Roles
+
+As discussed above, the Clickhouse access management model is based on Role Based Access Control.  
+
+For example, say we have two roles SALESPERSON and SALESMANAGER.  These may have a different set of read and write permissions.  
+
+SALESPERSON
+- Can read customers
+- Can write to sales 
+
+SALESMANAGER
+- Can write to customers
+- Can write to sales
+- Can read employees
+
+Roles are created through SQL:
+
+```
+create role if not exists salesperson;
+```
+
+```
+create role if not exists salesmanager;
+```
+
+And granted to users like so:
+
+```
+grant salesmanager to benjaminwootton;
+```
+
+Roles can also be assigned to users at creation time like so:
+
+```
+CREATE USER IF NOT EXISTS martinjones IDENTIFIED WITH plaintext_password BY 'password321' DEFAULT ROLE salesperson
+```
+
+## Privileges
+
+The final component of the RBAC model is privileges, describing a permission to execute certain types of queries over certain database objects.
+
+For instance, in the following query, we are stating that any users with the sales manager role, should be able to select the order_id and the pizza_type columns from the pizza_orders table.  
+
+```
+GRANT SELECT(order_id,pizza_type) ON db.pizza_orders TO salesmanager WITH GRANT OPTION
+```
+
+In the example above, we granted permissions to roles.  This is best practice, and the most maintinable option.  In similar deployments, we may prefer to grant privileges directly to users, which is also supported by Clickhouse:
+
+```
+GRANT SELECT(order_id,pizza_type) ON db.pizza_orders TO benjaminwootton WITH GRANT OPTION
+```
+
+## WITH GRANT OPTION
+
+The WITH GRANT OPTION clauses means that the user we grant the permission to, in turn has access to grant the same permission to other users.  In the instance above, we may be comfortable with letting our salesmanager devolve permissions to read data to their employees, but this may not be something we would be comfortable with salespeople being able to do.  The specific configuration will depend on your organisational security model.  
+
+## Restriction By IP Address
+
+It is possible to limit the IP addresses from which users can connect.  This can also be specified at user creation time:
+
+```
+create user if not exists benjaminwootton_ip_restricted identified with plaintext_password by 'password321' host ip '192.168.0.0/16';
+```
+
+
+## Row Policies
+
+As well as limiting data acess by columns, it is also  possible to limit the data which users can see in a more granular way by rows.  This can be done with ROW POLICY objects,  which accept a SQL query stating which rows given users or roles can access:
+
+```
+CREATE ROW POLICY low_value_orders_policy ON mydb.pizza_orders USING pizza_value < 1000 TO salesperson
+```
+
+## Summary
+
+In this lesson we looked at the role based access and permission model in Clickhouse, creating users, roles and privileges.
+
+In the next lesson, we will have a change of direction and look more deeply into how Clickhouse stores data in it's MergeTree table engines.  

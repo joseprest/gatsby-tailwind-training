@@ -1,0 +1,50 @@
+---
+title: Real Time Streaming Analytics On AWS
+slug: real-time-streaming-analytics-aws
+date_published: 2021-12-01:12:38.000Z
+date_updated: 2021-12-01:12:38.000Z
+order: 12image: /x.jpg
+featured_image: /x.jpg
+---
+
+AWS has a [large suite](https://aws.amazon.com/big-data/datalakes-and-analytics/) of data products and services.  These include managed databases, data lake services, business intelligence tools, and many offerings in the artificial intelligence and machine learning space.  
+
+With the properties of cloud such as unlimited scalability, ability to rapidly scale up and down, and consumption based billing, data and analytics initiatives are now one of the primary reasons why businesses are looking to move to the cloud.    
+
+As a business specialising in [real time data and analytics](/), of most interest to us are the AWS hosted services which support real-time analytics and stream processing.  In AWS, these are mainly based around the [Kinesis](https://aws.amazon.com/kinesis/) family of products.  
+
+In this brief article, we will introduce some of the Kinesis services, before moving onto more general considerations of implementing streaming data solutions within AWS.  
+
+## Kinesis Data Streams
+
+[Kinesis Data Streams](https://aws.amazon.com/kinesis/data-streams/) can be thought of as the message broker service of AWS, similar to say RabbitMQ in the JMS era, or Kafka today.  Competing products include Confluent cloud, and offerings from other cloud vendors such as GCP Pubsub.  
+
+Kinesis allows you to stream data into AWS using publish and subscribe semantics in the same way as these other messaging solutions.  These data streams can of course be high volume, data intensive, and have requirements for low latency and reliable data exchange.  
+
+Data published through Kinesis would usually be something like log data, event data, IOT or machine data, i.e. real time data generated in high volumes with some benefit to low latency processing.  This said, it can equally be used for less frequent business event data if necessary.  
+
+Kinesis Data Streams is a fully serverless service, which can be configured to scale up automatically based on the current load using the on-demand mode.  It is billed based on the amount of data that you transfer.  
+
+As you would expect, Kinesis integrates well with other AWS services.  For instance, it is possible to execute Lambda functions in response to events on your Kinesis stream, or stream events directly out into S3 with minimal configuration.
+
+## Kinesis Data Firehose 
+
+[Kinesis Data Firehose](https://aws.amazon.com/kinesis/data-firehose/) is a serverless Extract, Transform and Load service which can take streaming data from Kinesis streams, transform the events, and write them out to destinations.  These target destinations include AWS services such as S3 based data lakes or Redshift, or third party tools such as Splunk or Datadog for telemetry and monitoring use cases.  
+
+When we have lots of data, performing ETL whilst the data is in motion can help to clean up data at source, for instance providing data cleansing transformations or de-duplications.  In Kinesis Data Firehose, these transformation scripts are executed through lambda functions, allowing us to perform transformations with arbitrary complexity.  
+
+## Kinesis Data Analytics
+
+Where Kinesis Data Firehose is more about transformations of data  prior to load, [Kinesis Data Analytics](https://aws.amazon.com/kinesis/data-analytics/) is about analysing this streaming data whilst it is in flight.  A common example might be to window and aggregate streaming data, for instance translating an order stream into an total order value over the last 15 minutes. These streaming analytics could then in turn be written out to some destination.  
+
+Kinesis Data Analytics has two options for how to define this logic.  The first is a SQL based model, where you define your streaming analytics in a specially extended version of SQL.  This is the simplest and most accessible way to do this, but it is sometimes limiting in restricting you to analytics which can be carried out with SQL.  
+
+Alternatively, there is a newer approach which invovles creating _streaming applications_ which are based on an open source stream processing engine called [Apache Flink](https://flink.apache.org/).  Kinesis Data Analytics makes Flink easier to use by providing it as a managed service, and adding a notebook based GUI around the stream processing configuration.  
+
+A third option is to upload native Flink jobs, for instance as JAR files containing Java or Scala code.  In this instance, the benefit of Kinesis Data Analytics is simlpy as a managed service runtime.  
+
+## Streaming Data On AWS
+
+These three services can be combined to give us stream processing as a fully managed, serverless architecture with consumption based pricing.  We can ingest huge volumes of event based data into Kinesis Data Streams, transform it as it streams in using Kinesis Data Firehose, and aggregate and analyse the data using Kinesis Data Analytics.  In turn, all of this raw, transformed and analysed data can be routed into other endpoints for reporting and business intelligence.
+
+Running all of this technology outside of AWS is a surprisingly large undertaking.  A resilient Kafka and Flink cluster for instance takes time to configure and operate, and will be even more complex if we need auto-scaling and cross availability zone resilience.  ETL code might be require a different vendor technology, and writing the stream processing code in a low level stream processing framework is far from easy.  For many companies, bringing all of this into an AWS environment is a significant win.  

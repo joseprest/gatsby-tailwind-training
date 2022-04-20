@@ -1,0 +1,88 @@
+---
+tocTitle: TBC
+title: Introduction To DBT
+slug: dbt-introduction
+section: ""
+custom_excerpt: "In this section we will introduce DBT, explain the value it brings and explain some of the core concepts."
+order: 1
+category:
+  - dbt
+---
+
+## Lesson Overview
+
+In this section we will introduce [DBT](https://www.getdbt.com/), explain the value it brings to data teams, and cover some of the core concepts.  
+
+## What Is DBT?
+
+DBT stands for Database Build Tool.  It is an open source tool that is increasingly being deployed within modern data stacks to carry out _data transformations_.
+
+Data transformations involve taking some source data and changing it in some way, into some other format or derived structure and/or applying calculations to it.  Example transformations include:
+
+- Cleaning the data - e.g. removing duplicated data or changing it into a standardised format;
+- Summarising and aggregating the data - e.g. turning individual order data into daily summaries;
+- Structuring data - e.g. formatting for other internal or external systems for integration purposes;
+- Combining and joining data - e.g. building a joined up view from multiple source datasets;
+- Carrying out rudimentary statistical analysis - e.g. to highlight trends and enable insights into the data.  
+
+Of course, reports, dashboards and other data consumers can work with raw data directly to turn it into the format they need.  However, it usually makes sense to carry out transformations earlier in the process and closer to the data warehouse, making the data that is ultimately exposed to consumers much cleaner, better structured and more controlled.  This data preperation within the warehouse is the role that DBT plays.  
+
+Companies have been doing this type of Extract, Transform and Load (ETL) work around their data warehouse for many years, and it’s a very mature field with established patterns and tooling.  However, DBT’s approach is really a huge step forward in modernising the process and making it much more efficient and robust as we will see throughout this lesson.  
+
+## Problems With Traditional ETL
+
+Before discussing DBT in more detail, it is worth considering some of the problems with the existing approach and ETL tooling.  Some of the most commonly cited challenges are:
+
+- ETL technology stacks and scripts are often fragile and error prone;
+- The tools providing ETL are often GUI based and proprietary, requiring special skills and license fees;
+- ETL changes are often slow to implement and the whole approac is inflexible to change;
+- The ETL processes are usually managed by centralised data teams which become a bottleneck and source of delay;
+- The schemas within data warehouses are often strongly defined and controlled and the ETL scripts become tightly bound to this;
+- The ETL approach does not account for technical best practices such as testability, traceability, modularity etc.
+
+In short, existing approaches to ETL lack speed, quality and agility. At a time when businesses are looking to achieve more with their data, better approaches are certainly needed.  
+
+## From ETL to ELT
+
+Where historically, ETL was managed outside of the Data Warehouse using some third party proprietary tool, the main architectural chagne which DBT makes is to move the transformation step inside the Data Warehouse, where it can be executed _after_ the data has been loaded.  The process and the acronym therefore changes from ETL (Extract, Transform, Load) to ELT (Extract, Load, Transform).  
+
+This two character change sounds simple, but it has many positive implications:
+
+- Carrying out the transformations within the database is simpler as there is less external technology to implement and manage;
+- Transformations can be defined in open standard SQL rather than some proprietary or GUI based tool; 
+- These SQL transformations can be checked into source control, tested, and turned into reusable components etc making the process more rigorous and repeatable;
+- The transformations will likely be faster to run because they benefit from the full power of the warehouse;
+- We can make use of the full capability of the database including the security model, user defined functions and cloud elasticity when building and running the transformation code;
+- Both source data and transformed data can be retained in the database for different use cases.
+
+This shift from ETL to ELT has been made viable by industry developments such a cheaper cloud storage such that provided by AWS S3, and the separation of storage and compute provided by databases such as Snowflake or Redshift.   Indeed, though DBT can be ran against many legacy databases, it is these modern data stacks are where ELT and DBT is finding it’s natural home.
+
+## Software Engineering For Data
+
+DBT is said to bring the practices of software developers to the data realm, implementing a controlled software development lifecycle and set of patterns.  For example:
+
+- The scripts which describe the DBT transformations are based on SQL and stored as simple text files and configuration files.  These can be therefore be stored in a source code management system, included in branching strategies and code reviews, and versioned properly so we have repeatable builds and deployments;
+- DBT scripts can be ran using a lightweight command line interface.  This could happen on the developers desktop, the analysts desktop, or incorporated into CI/CD deployment pipelines and ran with something like Jenkins.  They are not trapped in some proprietary tool;
+- DBT incorporates testing and assertion frameworks to ensure that the transformation runs successfully and produces correct and consistent idempotent results on each run;
+- DBT models can be chained together into pipelines with dependencies, meaning that one step can only run if the proceeding one is successful. Again, this can be incorporated into the CI/CD process for increased reliability and robustness as we promote changes through environments;
+- DBT is aware of environments and profiles, meaning that we can easily execute our scripts against development, test and production environments in a controlled way. (Integrating with something like Snowflake zero copy clones really makes production realistic testing of data transformations a reality);
+- In addition to the automation and SDLC benefits, DBT also supports more collaborative ways of working and breaks the dependency and bottleneck on central data teams. For instance, because DBT is based around SQL and simple configuration files, we can break out of the central data team, and allow different teams to have access to and potentially take ownership of their DBT scripts.
+
+All in all, DBT is a great tool for teams that want to manage their data using high quality engineering practices following a similar journey as software engineers have done over recent years.  
+
+## CLI vs DBT Cloud 
+
+There are two ways to interact use DBT.
+
+- Command Line Interface (CLI) - This involves running a command line tool on your computer.  The CLI is open source and therefore free to use and extend;
+- DBT Cloud - This is a managed, cloud hosted service which provides a user interface around DBT.  This is a commercial and paid product.  
+
+Though DBT Cloud is an excellent product which brings many additional benefits to data teams, this course is entirely based on open source DBT CLI in order to build understanding of how the tool operates.  If you move to a production deployment, it is worth considering DBT Cloud to further improve your productivity with DBT.  
+
+## Summary
+
+In this lesson we introduced DBT, explained how it is different to traditional approaches to ETL, and how it adds value to data teams.
+
+We also looked at how DBT adds rigour by supporting software development practices such as source control, modularity, testability and improved collaboration.  
+
+In the next lesson we will begin using the DBT CLI and configure our first project.

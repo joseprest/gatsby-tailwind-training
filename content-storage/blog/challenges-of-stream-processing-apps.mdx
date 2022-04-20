@@ -1,0 +1,51 @@
+---
+title: The Challenges Of Stream Processing Applications
+slug: challenges-of-stream-processing-apps
+date_published: 2020-02-10T11:13:54.000Z
+date_updated: 2021-10-19T10:51:18.000Z
+order: 107
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+The idea of [processing a stream of events to generate business value](/in-business-everything-is-an-event/) is a relatively simple one to understand.  We also believe it is a compelling idea which can deliver genuine business value and improvements to the customer experience.    
+
+However, to deliver on this *technically* quickly becomes complex.
+
+Some of the key challenges you will encounter include:
+
+## Exactly Once Processing
+
+If we are processing a stream of events it is important to never drop a message, and never double send a message. In some scenarios such as web analytics, we might be relaxed about the occasional dropped message, or even choose to optimise latency over correctness, but in most business scenarios, correctness is much more important. Exactly once processing is most difficult in the case of failure of a server or a component in the system, where we need complete confidence over which messages have been processed when the system is restored.
+
+## Stateful Processing
+
+It is relatively simple to develop stateless processors which do things such as filter out, route, or add detail to messages. However, the complexity grows when we want to look for historical patterns such as “3 failed credit card transactions in the last hour.” To do this, we need to maintain a history of events, which needs to be stored in memory for fast lookups and persisted to disk to enable exactly once processing. We also need to get the right data to the right nodes who are performing lookups against this dataset.
+
+## Latency
+
+In a real time complex event scenario, we typically need to respond as fast as possible. As well as optimising the path through the system, one of the main tools in our toolbox to do this is to add parallelism into the message queues and processors. The problem is that parallelism opens up the system to race conditions and events being processed out of order. So as we parallelise we have to use constraints, locks and integrity checks which are the enemy of latency. To develop a low latency, non blocking stream processing solution which maintains correct semantics is not simple.
+
+## Time Semantics
+
+The notion of time gets interesting in event processing. Do we care about the time the event happened, the time it was received by the processor, or the time it was stored in the database? In most scenarios, event time is the natural choice, but then we need correct semantics to ensure that we are using state at the time in question when we come to process the event, and not giving it a glimpse into the future. This becomes fiendishly complicated when we want to process out of order and late arriving events, because then we potentially need to go back and process old messages because the state at the time has actually moved.
+
+## Scalability
+
+Event processing can be very bursty, perhaps providing a lot of data as a batch every hour or even at end of day. We therefore need a capability to scale up and down as necessary to accomodate these changing workloads.
+
+## Security
+
+It is important to maintain complete security around personally identifiable and commercially sensitive data. We need to encrypt all stored data in flight and at rest as it moves through the various message queues and processors. This repeated encryption and decryption has impacts on latency and operationally managing the system.
+
+## Data Volumes
+
+Event processing can create enormous volumes of data which is difficult to ingest and analyse. In the realm of stateful complex event processing, we also need to store some of this in memory and at processing nodes.
+
+## Event Processing Frameworks
+
+To make stream processing easier, various event processing frameworks and platforms have been created including Kafka Streams, Flink, Spark Streams and Google Cloud Dataflow.
+
+These are individually powerful frameworks which help developers to write and operate correct, performant stream processors where much of the above complexity is abstracted away from you.
+
+We do feel that these frameworks are complex to use, even for experienced developers, and require a specialist skillset to deploy. For this reason, we have developed [Timeflow](/), which aims to make powerful real time and stream capabilities available to businesses without worrying about requirements such as the above.

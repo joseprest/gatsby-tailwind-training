@@ -1,0 +1,22 @@
+---
+title: Best Practices For Staging Data Into Snowflake
+slug: tips-for-staging-data-into-snowflake
+date_published: 2021-09-09T13:05:30.000Z
+date_updated: 2021-10-19T10:45:44.000Z
+excerpt: Guidelines on how best to stage your data into Snowflake.
+order: 16
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+Much of the work of a Snowflake data engineer is in loading and transforming their data into Snowflake tables.  Though this is easy to achieve, there are a number of best practices that will help to keep the process organised, scalable and performing well.  In this short article, we wanted to share a few best practices for organising your staging processes.  
+
+- Use The Correct Staging Area Type: Snowflake has different types of staging areas, including internal and external stages, and user, table, and named stages. It's important to choose the best option for your requirements.  Usually, this would be an access-controlled named stage for production code.  
+- Organise Staging Into Folders: Many people use staging areas a buckets of files, without realising that you can PUT into a directory in order to better to organise your data.  
+- Purging: When we stage data, there is a PURGE=TRUE option which removes the data after it has been successfully staged.
+- Optimise Size Of Staged Files: There is a sweet spot for the size of the file for maximum throughput and performance.  Consensus is that your data should be split into 50-200mb files, though the optimal point for you will vary on things like the compute available and structure of the data.  Avoiding breaking your data into thousands of very small files, or uploading single very large files is likely to be sub-optimal however.  
+- Use A Separate Warehouse For Data Staging:  It is worthwhile creating a separate data warehouse for your loading process in order to avoid hurting performance for people querying your database.  This additional warehouse can be suspended immediately after the data load in order to reduce costs. 
+
+Following these best practices, your Snowflake imports will be better organised and more maintainable.  

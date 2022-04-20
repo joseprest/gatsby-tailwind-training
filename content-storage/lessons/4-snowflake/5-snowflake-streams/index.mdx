@@ -1,0 +1,113 @@
+---
+tocTitle: TBC
+title: Snowflake Streams
+slug: snowflake-streams
+order: 5
+custom_excerpt: In this lesson we will learn about snowflake streams, which allow us to resopnd to database DML statements.
+category:
+    - snowflake
+---
+
+## Lesson Overview
+
+In this lesson we will learn about Snowflake streams, explaining the concept and discussing how they can be used in practice.
+
+## What Are Streams
+
+Imagine if we have a table of data in our Snowflake database:
+
+| Ingredients      | Price | Unit     |
+| ----------- | ----------- | ----------- |
+| Cheese      | $1       | 'lb'    |
+| Tomato   | $3        | 'lb'    |
+| Onions   | $9        | 'lb'    |
+
+Over time, there are updates to the data, such as a price change a new row entered.  
+
+| Ingredients      | Price | Unit |
+| ----------- | ----------- | ---------- |
+| Cheese      | $1       | 'lb'    |
+| Tomato   | $3        | 'lb'    |
+| Onions   | $8        | 'lb'    |
+| Anchovies   | $9        | 'lb'    |
+
+There are many situations where it is useful to respond to or report on the fact that the data was changed.  Snowflake streams allow us to capture a log of these DML statements, showing the old value, the new value and metadata about the change.
+
+
+## Creating A Streams
+
+Let's begin by creating a new table and inserting some data:
+
+```
+create table ingredients( name varchar, cost integer, unit varchar )
+insert into ingredients values ( 'Cheese', 1, 'lb' )
+insert into ingredients values ( 'Tomato', 3, 'lb' )
+insert into ingredients values ( 'Onions', 9, 'lb' )
+```
+
+We can then create the stream:
+
+```
+create stream ingredients_stream on ingredients;
+```
+
+Initially there are no events in the stream.  It only begins capturing the DML updates post creation:
+
+```
+select * from ingredients_stream;
+```
+
+However, if we insert one more row into the underlying table:
+
+```
+insert into ingredients values ( 'Anchovies', 9, 'lb' )
+```
+
+Then select the stream again:
+
+```
+select * from ingredients_stream;
+```
+
+We can see that the stream has populated with the DML event.  
+
+```
+```
+
+As you will see, the event shows that an insert took place, what the old values were and what the new values were.  We could report directly on this stream, or identify that it has happened and use it to trigger business logic.  
+
+Though it appears this way, note that the stream doesn't actually contain or duplicate the data or use significant additional storage.  This is because it uses an offset or pointer back to the original record.
+
+## Updates And Deletes
+
+If we now perform an update and a delete against our source table:
+
+```
+update ingredients set unit = 'kg' where name = 'Tomato';
+delete from ingredients where name = 'Anchovies';
+```
+
+Then reselect from the stream:
+
+```
+select * from ingredients_stream;
+```
+
+The new DML statements will again be reflected in the table:
+
+```
+```
+
+## Use Cases For Streams
+
+So now we have demonstrated how the changelog is maintained on our table, how could we potentially use this data?   A few common use cases we see are:
+
+- Reporting - We can report directly on the stream object, using the old value, the new value and metaadata such as the change time.  This means that the underlying table can always contain the latest value, whereas the stream could contain the history.
+- Tiggering Downstream Actions - Tasks can be run to periodically process the new inserts and updates, for instance sending a message to a downstream system.  
+- Audit - Auditing old and new data values for compliance purposes 
+
+## Summary 
+
+In this lesson we learned about Snowflake streams.  We created a stream, and saw the data that is captured in response to inserts, updates and deletes on the underlying table.
+
+We also considered some of the use cases for Snowflake streams.  

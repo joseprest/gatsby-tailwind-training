@@ -1,0 +1,67 @@
+---
+tocTitle: TBC
+title: Loading Data Into Snowflake
+slug: snowflake-loading-data
+order: 7
+custom_excerpt: In this lesson we will learn about batch loading data into snowflake and how to use staging areas. 
+category:
+    - snowflake
+premium_content: true
+---
+
+
+## Lesson Overview
+
+In this lesson we will learn about batch loading data into snowflake and how to use staging areas.
+
+## Introduction
+
+In order to use Snowflake, we of course need to populate it with data.  Though we can do this using ad-hoc insert statements through the console, the more typical requirement is to continually import data which has been exported from other systems.  
+
+Usually, data is exchanged in batches.  For instance, every hour or every day, an extract of orders could be taken from some eCommerce system and pushed into the data warehouse.  Though businesses are looking to populate their warehouse faster, in smaller batches or using real-time streaming, batch data integration is still the most common approach and something a Data Engineer needs to learn about, understand and likely implement.  
+
+When we batch load data into Snowflake, we typically follow a two step process:
+
+Firstly, we need to upload the data from your source to a "staging area".  At this point, your data would typically be stored in a format such as CSV, TSV, Parquet or JSON.  
+
+Secondly, we perform a COPY INTO operation to take data from that staging area and copy it into the Snowflake table in a relational format.  
+
+At the COPY INTO, the data is then managed by Snowflake, so could be safely deleted from the staging area.  
+
+Note that this needs to be a continuous process.  Ordinarily, we will load all of the historical data during the first migration, then need to setup a process to continually ingest new data as it is created and pushed into the staging areas.  
+
+## Staging areas
+
+With regards to the staging area, there are a few options open to us.  In this lesson, we will illustrate the choices and consider when to use which option.  
+
+### External Vs Internal Staging Areas
+
+Snowflake has two types of staging areas - External or Internal.  
+
+External staging areas are storage areas outside of control of Snowflake.  Typically they will exist on cloud storage such as AWS S3 or Azure Blob Store, but will be created directly within the cloud infrastructure.  This could for instance be a _data lake_ which you have already created and use for other purposes.  
+
+Internal staging areas are managed directly by Snowflake.  They will likewise be stored on the cloud providers object storage, but will be created and maintained by Snowflake.  
+
+In many cases, your data will already be stored on cloud object storage.  At which point, we may as well just do our load directly from those external stage rather than go through a Snowflake stage.  
+
+If this isn’t the case, the preference is usually to push to an Internal stage.  This way, we will benefit from compression, the ability to query the data in a slightly more performant manner, and benefit from improved audit features.  It also means that we could potentially avoid interacting with the cloud provider and leave this to be brokered through Snowflake, keeping everything simple.  
+
+### Staging Area Types
+
+If you go down the route of using internal stages, there are then 3 different subtypes:
+
+- User Stage is an area available only to the currently logged in user.  Data stored in this stage is private to the logged in user and can not be seen by any other users;
+- Table Stages are associated with a specific table.  Every table has 1 and only 1 table stage and is created at table creation time;
+- Named Stages are created separately and are not tied to any particular table or view.
+
+The decision of where to stage from is sometimes quite subtle.  
+
+- User Stage: It makes sense to use this where an individual data engineer or analyst is loading their data, and has no need to share with anybody else within the organisation.  This could be the case during development, whereby an individual data engineer is working on the ETL process before moving to a shared development, test, or production environment.  The data could also be private and need to be locked down to an individual user scope;
+- Table Stage: When data has to be shared between multiple Snowflake users, and has a one to one mapping with the table, this is the natural option to reach for when staging data.  Some teams will also have a workflow whereby they develop within their user stage, then promote the change to the table stage as the code matures;
+- Named Stage: Unlike the user and table stages, we can also specify additional details on the named stage which describe, for instance, the format of the data at load time instead of COPY INTO stage.  Named stages are also specific database objects, so can be created, dropped, and have role based permissions applied.  These stages tend to be more complex to work with, but more explicit for production pipelines.
+
+## Summary 
+
+In this lesson we looked at staging data in Snowflake.  We learnt about internal and external stages, and user, table and named stages.  
+
+In the next lesson we will look into Snowflakes approach to referential integrity.  

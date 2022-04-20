@@ -1,0 +1,48 @@
+---
+title: Stateless and Stateful Event Processing
+slug: stateless-and-stateful-event-processing
+date_published: 2020-02-18T07:02:56.000Z
+date_updated: 2021-10-19T10:51:01.000Z
+order: 128
+excerpt: TBC
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+In previous blog articles, we discussed the potential of event stream processing as a means of improving customer experience and business efficiency. 
+
+In this article, we wanted to look deeper at the type of analysis we might want to do on these event streams to bring the opportunity to life.  
+
+Imagine a customer lifecycle which is comprised of a series of events such as the following:   
+
+- A customer visits your website and browses some products;
+- They download some information about a product;
+- A few days later, they come back and place an order;
+- The order is packed and dispatched;
+- A few days later, the customer logs onto the site and leaves a negative review.
+
+There are various things we might wish to do here to the event stream to filter, modify, analyse and respond to it.  For instance, maybe there is the business requirement to manually review all orders over a certain value being dispatched outside of the UK.  
+
+## Stateless Transformations 
+
+The first class of transformations we would like to do are referred to as *stateless*, because they don’t require any history or memory in order to action.  
+
+For instance, filtering if the order value is greater than a certain number, or reformatting an Order ID are stateless operations because they happen on a message by message basis, with no reference to the past history.  
+
+Statless can happen quickly and can be scaled across many servers for inherent parallelism. 
+
+## Stateful Transformations 
+
+The second class of changes are stateful.  An example of a stateless transformation might be the requirement to see if the same customer has placed high value 3 orders in the last 24 hours, or to aggregate the total for all of the orders dispatched today.  
+
+Stateful transformations are much harder to implement, because they require memory of the event stream, require access across different streams, and we need to ensure that stream processors have access to the right data at the right time.  In the above example, the stream processor needs to have access to at least 24 hours of order and customer data in order to keep up the running total.
+
+When the data is no longer needed, the data should be discarded to prevent running out of memory.  
+
+Paralellising stateful operations is also more complex, because we may be dealing with timing issues such as different processors seeing more up to date data than others.  This makes co-ordination and order of magnitude more complex.  
+
+Stateful computations are powerful, and are where the untapped opportunities lie for companies to differentiate their businesses.  Sadly, stateful stream processing is also where stream processing becomes complicated. 
+
+## Introducting Timeflow
+
+Our low-code platform, <a href="http://timeflow.systems">Timeflow</a>, makes stateful and stateless stream much simpler than it has historically been, avoiding the need for bespoke software development or data engineering effort.  If you have streams of real time data that you would like to process and respond to, please visit the website today to learn more.  

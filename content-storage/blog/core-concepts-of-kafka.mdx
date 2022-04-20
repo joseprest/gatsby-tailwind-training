@@ -1,0 +1,43 @@
+---
+title: Core Concepts Of Kafka
+slug: core-concepts-of-kafka
+date_published: 2021-09-07T11:32:21.000Z
+date_updated: 2021-09-07T11:32:21.000Z
+order: 109
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+As discussed in a previous article, Kafka is the industry standard platform for streaming real time data between applications and endpoints.
+
+In this article, we introduce some of the core concepts required to work with Kafka, either as a developer or administrator.  
+
+### Broker
+
+A single Kafka server is referred to as a broker.  It is the responsibility of the broker to accept and distribute the messages to interested producers and consumers in a performant and reliable manner.  
+
+Though it is possible to have a single Kafka broker doing all of the work, this would be risky in a production context.  Therefore, for performance and resiliency reasons, brokers are often arranged into a cluster.  If one of the brokers was to fail, the other nodes in the cluster would be able to continue to share the load with no loss of data.    
+
+### Producers and Consumers
+
+Producers are the processes sending messages to the Kafka broker, and Consumers are the processes receiving messages from the broker.  It is possible to have many thousands of consumers and producers interacting with the broker at any one time if necessary.  
+
+The most important consideration for publishers and consumers is that their messages are sent and received reliably and with the correct semantics such as "exactly once" processing.   
+
+### Messages
+
+A broker is responsible for delivering messages from the producers to the consumers.  In a high volume environment, extremely high volumes of messages could be sent in response to e.g. website visits or IoT data.  
+
+Kafka places limited requirements on the actual format of this message.  The body of the message can be an arbitrary block of binary data, whilst the head is a set of key/value pairs describing metadata for the message.  
+
+### Topics 
+
+All of the messages that are sent on a Kafka broker are sent to a specific named topic.  A topic has a name, which could be something such as Orders, Website_Visits, or Prices, describing the data within the topic.  
+
+When we send messages to a topic, we get a few guarantees.  Firstly, messages are sent and processed in a first in, first out order so we know that messages remain in order.  Secondly....
+
+### Partitions 
+
+In order to provide improved throughput and performance, topics are sub-divided into partitions.  For instance, our Website_Visits topic could be divided into 10 partitions.  Partitions are divided between nodes in a cluster, giving us parallelism. Kafka will make guarantees such as messages being processed in order within a given partition.  
+
+With Kafka, it's relatively easy to create a broker and start streaming messages. However, for data engineers, it is worth understanding the key concepts, the tuning parameters, and how they impact on things such as processing guarantees in various failover scenarios.  

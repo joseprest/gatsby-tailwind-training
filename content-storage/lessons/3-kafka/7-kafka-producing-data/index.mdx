@@ -1,0 +1,36 @@
+---
+tocTitle: TBC
+title: Producing Data To Kafka
+slug: kafka-producing-data
+custom_excerpt: In this lesson we will learn about producing data in Kafka.
+order: 7
+category:
+    - kafka
+---
+
+## Lesson Overview
+
+In this lesson we will learn about producting data to Kafka.
+
+## Kafka Producers
+
+Kafka Producers are processes which are responsible for sendnig data events to Kafka topics.  
+
+A given producer connects to a broker and connects to one or more Kafka topics.  
+
+They will then begin sending messages.
+
+
+## kafka-console-producer script
+
+The Kafka broker includes a script for producing messages from the console.  This is useful for debugging purposes. 
+
+```
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic new_pizza_orders
+```
+
+## Summary
+
+In this lesson we took a deeper look into the process and considerations when publishing data into Kafka.
+
+In the next lesson, we will look at performance testing Kafka by sending and consuming high volumes of data.

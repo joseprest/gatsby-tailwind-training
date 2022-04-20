@@ -1,0 +1,142 @@
+---
+tocTitle: Where Is This Used?
+title:  Snowflake Billng
+slug: snowflake-billing
+order: 3
+custom_excerpt: In this lesson, we will learn about the Snowflake billing model.
+category:
+    - snowflake
+---
+
+## Lesson Overview
+
+In this lesson, we will learn about the Snowflake billing model and credit system.  We will also look into the various cost visiblity and cost control features of Snowflake, and touch upon ways to minimise costs.
+
+## Consumption Based Pricing
+
+Snowflake offers a genuinely consumption based pricing model where you pay for the compute that you use by the second, and the data storage that you use by the byte.  
+
+When consuming Snowflake, there are three classes of resource which you will use and pay for:
+
+### Compute 
+
+When you execute queries or updates, you need processing power to carry out the requests.  It is this compute which you pay for, and which is charged on a per second basis.  
+
+### Storage 
+
+The data in your Snowflake instance will need to be saved.  You will pay for this on a per byte basis.  
+
+### Cloud Services
+
+In order to run your account, you will need to do various activities such as login, adminster users and run scheduled jobs.  
+
+## Credit System
+
+As discussed in the last lesson, Snowflake is billed using a credit system.  As you use Snowflake you will be accruing credits for your compute, storage and cloud service usage.  These will then be billed at a per credit cost at month end.  
+
+As we touched on in the last lesson, there is a per credit cost is a function of the tier you are on, the cloud provider and the cloud provider region.  
+
+For instance, at the time of writing, an Enterprise user in AWS us-east region would be paying the following:
+
+| Tier      | Credit Cost |
+| ----------- | ----------- |
+| Standard      | $2.60       |
+| Enterprise   | $3.90        |
+| Business Critical   | $5.20        |
+
+Whereas the same deployment in GCP London region would cost:
+
+| Syntax      | Description |
+| ----------- | ----------- |
+| Standard      | $2.70     |
+| Enterprise   | $4.00        |
+| Business Critical   | $5.40        |
+
+Making GCP slightly more expensive with regards to your Snowflake credits if you need to host in London.
+
+## Virtual Warehouse Costs
+
+Your compute costs will likely be the largest part.  This is because storage is cheap, and because Snowflake pass along their storage costs without making a profit.  
+
+Snowflake has a number of different tiers of data warehouse which are structured on a T-Shirt size basis, each of which has a credit-per-hour associated cost.  
+
+| Syntax      | Credits Per Hour |
+| ----------- | ----------- |
+| X-Small      | 1       |
+| Small   | 2        |
+| Medium   | 4        |
+| Large      | 8       |
+| X-Large   | 16        |
+| 2X-Large   | 32        |
+| 3X-Large     | 64       |
+| 4X-Large   | 128        |
+| 5X-Large   | 256        |
+| 6X-Large      | 512       |
+ 
+
+Combining the two tables above, we can work out our costs per hour of running in AWS eu-west:
+
+| Tier      | Credit Cost | Warehouse Size |  Warehouse Credits Per Hour | Warehouse Cost Per Hour
+| ----------- | ----------- |--------------------------------------------------------------|
+| Standard      | $2.60       | 2X-Large | 32   | 83.20 |
+| Enterprise   | $3.90        | 2X-Large | 32   | 124.80 | 
+| Business Critical   | $5.20        | 2X-Large | 32   | 166.40 |
+
+And the same for GCP:
+
+| Tier      | Credit Cost | Warehouse Size |  Warehouse Credits Per Hour | Warehouse Cost Per Hour
+| ----------- | ----------- |--------------------------------------------------------------|
+| Standard      | $2.60       | 2X-Large | 32   | 83.20 |
+| Enterprise   | $3.90        | 2X-Large | 32   | 124.80 | 
+| Business Critical   | $5.20        | 2X-Large | 32   | 166.40 |
+
+The math is not too complex to work out, but hopefully shows that is is highly consumption based and could be unpredictable depending on how your users are using Snowflake.  This may or may not be a good thing for you over a more fixed pricing model.  
+
+## Bespoke Arrangements
+
+For larger deployments, it is possible to achieve discounts through direct negotiation with Snowflake.  This will likely require pre-payment or agreements for compute and storage consumption.  
+
+## Snowflake Tables For Billing
+
+Snowflake makes available a lot of information about accured bills through internal tables.  We will now take a quick tour of these to highlight the main ones:
+
+Begin by logging into your Snowflake instance if not already:
+
+```
+snowsql -u foo 
+```
+
+### Table 1
+
+```
+select * from billing
+```
+
+### Table 2
+
+```
+select * from billing
+```
+
+### Table 3
+
+```
+select * from billing
+```
+
+### Table 4
+
+```
+select * from billing
+```
+
+### Table 5
+
+```
+select * from billing
+```
+
+
+## Summary 
+
+In this lesson we looked at the Snowflake billing model.  

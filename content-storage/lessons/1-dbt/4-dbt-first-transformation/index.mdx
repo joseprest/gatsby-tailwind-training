@@ -1,0 +1,277 @@
+---
+tocTitle: Where Is This Used?
+title:  Executing Your First Transformations
+slug: executing-your-first-transformations
+custom_excerpt: In this lesson we will implement and run our first transformations using DBT models that build both tables and views.
+order: 4
+category:
+    - dbt
+premium_content: true
+---
+
+## Lesson Overview
+
+In this lesson we will implement and run our first transformations using DBT models that build both tables and views.
+
+## Example Models
+
+New DBT projects created using _dbt init_ include two example models and some example tests which you can copy as you begin to build out your own transformation code.  It is sometimes useful to to perform a dbt run to execute these models in order to check connectivity between DBT and your database.  The tables and views they create can easily be removed later.  
+
+First, return to the _pizza_analytics_ project and run a _dbt ls_ to list the models.  
+
+```
+cd ~/pizza_analytics
+dbt ls
+```
+
+Which shows that we have 2 models and 4 tests configured in the project.  
+
+```
+my_new_project.example.my_first_dbt_model
+my_new_project.example.my_second_dbt_model
+my_new_project.schema_test.not_null_my_first_dbt_model_id
+my_new_project.schema_test.not_null_my_second_dbt_model_id
+my_new_project.schema_test.unique_my_first_dbt_model_id
+my_new_project.schema_test.unique_my_second_dbt_model_id
+```
+
+At this stage, we can quickly take a look at one of the sample models to understand what is going to happen when we execute it:
+
+```
+more models/example/my_first_dbt_model.sql
+```
+
+Output:
+
+```
+{{ config(materialized='table') }}
+
+with source_data as (
+
+    select 1 as id
+    union all
+    select null as id
+
+)
+
+select *
+from source_data
+```
+
+This describes a model where we first create a temporary table with one column and two rows, one row containing _1_ and one row containing _null_.  
+
+The transformation then runs a select * from this table and _materializes_ it into a table which be named based on the filename.  In this instance, the table will be called my_first_model.  
+
+When this transformation model runs, our expectation would be to be able to query the table my_first_dbt_model within Postgres, and see the same 1 column table with 2 rows.  
+
+## Running The Models
+
+We can now execute our first _dbt run_ to build the two sample models:
+
+```
+dbt run
+```
+
+Which should show a succesful run in the dev target.  
+
+```
+Running with dbt=0.21.0
+Found 2 models, 4 tests, 0 snapshots, 0 analyses, 162 macros, 0 operations, 0 seed files, 0 sources, 0 exposures
+
+15:22:45 | Concurrency: 1 threads (target='dev')
+15:22:45 |
+15:22:45 | 1 of 2 START table model default.my_first_dbt_model.................. [RUN]
+15:22:45 | 1 of 2 OK created table model default.my_first_dbt_model............. [SELECT 2 in 0.08s]
+15:22:45 | 2 of 2 START view model default.my_second_dbt_model.................. [RUN]
+15:22:45 | 2 of 2 OK created view model default.my_second_dbt_model............. [CREATE VIEW in 0.05s]
+15:22:45 |
+15:22:45 | Finished running 1 table model, 1 view model in 0.28s.
+
+Completed successfully
+
+Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2
+```
+
+## Confirming Succesfull Execution 
+
+Let's also manually confirm that the transformatiosn ran as expected by logging in to postgres and confirm that the tables and views were created:
+
+```
+psql --user postgres --db pizzastore
+\dt dev_pizzastore.*;
+```
+
+Output:
+
+```
+                   List of relations
+     Schema     |        Name        | Type  |  Owner
+----------------+--------------------+-------+----------
+ dev_pizzastore | my_first_dbt_model | table | postgres
+(1 row)
+```
+
+We can also run a select query against the table:
+
+```
+select * from dev_pizzastore.my_first_dbt_model;
+```
+
+Outputs:
+
+```
+ id
+----
+  1
+
+(2 rows)
+```
+
+This shows that the table was created in Postgres and populated as expected.  
+
+## Creating Our Own Model
+
+Having executed the sample DBT model, We can now generate our own more useful models for the first time.  
+
+Let's begin by creating some simple source data.  First we will connect to postgres:
+
+```
+psql --user postgres
+```
+
+We will then create and populate the database like so:
+
+```
+\c pizzastore
+set search_path to 'dev_pizzastore';
+create table pizza_orders ( order_id integer, pizza_type varchar, num_ordered integer );
+insert into pizza_orders values ( 1, 'Margharita', 1 );
+insert into pizza_orders values ( 2, 'Hawawain', 5 );
+insert into pizza_orders values ( 3, 'Margharita', 6 );
+insert into pizza_orders values ( 4, 'Mushroom', 2 );
+insert into pizza_orders values ( 5, 'Mushroom', 4 );
+insert into pizza_orders values ( 6, 'Meat Feast', 1 );
+insert into pizza_orders values ( 7, 'Margharita', 4 );
+insert into pizza_orders values ( 8, 'Meat Feat', 2 );
+insert into pizza_orders values ( 9, 'Meat Feat', 4 );
+```
+
+This table describes a number of pizza orders, and the numbers of each type that were ordered.  For instance, in total we sold 11 Margharita pizzas in the period.
+
+## Materialising A Table
+
+Imagine that this pizza order data is being uploaded into our Postgres Data Warehouse through some batch or real time loading process.  Our task is to take this data, aggregate it so we understand the total number of each pizza type sold, then save this to a table to make our reporting more consistent, organised and high performance.  We will achieve this using a DBT transformation.  
+
+The first thing we might to do is develop the SQL query to get the answer we need.  If we execute this again Postgres:
+
+```
+select pizza_type, sum( num_ordered ) from pizza_orders group by pizza_type;
+```
+
+We should see the total number of pizzas ordered of each type:
+
+```
+ pizza_type | sum
+------------+-----
+ Mushroom   |   6
+ Margharita |  11
+ Meat Feast |   1
+ Hawawain   |   5
+ Meat Feat  |   6
+(5 rows)
+```
+
+We then need to take this SQL and place it into a model where it can be executed by DBT.  
+
+One model file describes one particular database table or view that we need to build from other underlying tables, and as already mentioned, the table or view that we create is named based on the filename where the model is defined.  In this case therefore, we can name our file pizzas_sold_by_pizza_type.sql.
+
+```
+nano models/pizzas_sold_by_pizza_type.sql
+```
+
+And specify our model like so:
+
+```
+{{ config(materialized='table') }}
+
+with source_data as (
+   select pizza_type, sum( num_ordered ) from dev_pizzastore.pizza_orders group by pizza_type
+)
+
+select * from source_data
+```
+
+Effectively, we are executing the group by query we defined above, then storing this in a new table named pizzas_sold_by_pizza_type.
+
+At this time, we can also delete the sample models which came when we initiated the project:
+
+```
+rm -rf models/examples
+```
+
+Now, lets do a _dbt run_ to execute the pizzas_sold_by_pizza_type transformation that we have just defined:
+
+```
+% dbt run
+```
+
+Output:
+
+```
+Running with dbt=0.21.0
+[WARNING]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.my_new_project.example
+
+Found 1 model, 0 tests, 0 snapshots, 0 analyses, 162 macros, 0 operations, 0 seed files, 0 sources, 0 exposures
+
+14:17:03 | Concurrency: 1 threads (target='dev')
+14:17:03 |
+14:17:03 | 1 of 1 START table model dev_pizzastore.pizzas_sold_by_pizza_type.... [RUN]
+14:17:03 | 1 of 1 OK created table model dev_pizzastore.pizzas_sold_by_pizza_type [SELECT 2 in 0.08s]
+14:17:03 |
+14:17:03 | Finished running 1 table model in 0.17s.
+
+Completed successfully
+
+Done. PASS=1 WARN=0 ERROR=0 SKIP=0 TOTAL=1
+```
+
+DBT reports that the transformation ran succesfully.  
+
+Let's then go back to postgres:
+
+```
+psql --user postgres
+select * from pizzas_sold_by_pizza_type;
+```
+
+Output:
+
+```
+ pizza_type | sum
+------------+-----
+ Mushroom   |   6
+ Margharita |  11
+ Meat Feast |   1
+ Hawawain   |   5
+ Meat Feat  |   6
+ ```
+
+ And we can see that the table was created succesfully.
+
+
+ ## Summary
+
+ In this lesson we began by  performing a _dbt run_ to create the two sample models created by _dbt init_ within our Postgres data warehouse.  
+
+ We then created some test data within Postgres, and built a simple DBT model to aggregate this data into a table.  We then executed this model and validated the results within our Postgres database.
+
+ In this lesson we materialised to a table.  In the next lesson, we will explore the alternative options including materialising to a view.
+
+
+
+
+
+
+

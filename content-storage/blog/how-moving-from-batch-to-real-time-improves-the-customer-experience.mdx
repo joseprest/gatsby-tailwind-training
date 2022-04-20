@@ -1,0 +1,40 @@
+---
+title: How Moving From Batch To Real Time Improves The Customer Experience
+slug: how-moving-from-batch-to-real-time-improves-the-customer-experience
+date_published: 2020-09-07T18:17:34.000Z
+date_updated: 2021-09-03T14:39:09.000Z
+order: 115
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Over time, the typical business acquires more and more applications. Some will be bespoke, some off the shelf, some cloud hosted SaaS tools and some in the data centre.
+
+Frequently, business requirements will arise where these applications need to be integrated. For instance, every time an order is placed on our eCommerce website, a customer record should be created in the CRM system, the marketing system, and the ERP system.
+
+As companies add more and more of these integrations, they end up with a spaghetti of bespoke interconnections and data exchanges which looks something like this:
+![](/content/images/wordpress/2020/09/map-1024x846.png)
+These integration points have historically been developed in one of three ways:
+
+1. API Integration &#8211; When the e-commerce system records a new customer, the ERP and marketing systems are called in real time to create the record. This is the gold standard for moving data around in real time, but it does couple the systems together very tightly, so we have to worry about keeping APIs compatible so that we do not break upstream and downstream systems.
+2. Batch Data Integration &#8211; Because of the complexity and effort involved in developing and managing point to point APIs, most information is exchanged between applications as batches. Every 24 hours or so, information is extracted from one system, uploaded to another as a data file, and imported into the destination. This is referred to as extract, transform and load.
+3. Message Based Integration &#8211; As things happen in the source system, messages are transferred from the source to destination over an intermediary message queue. This is almost real time, and does decouple the systems somewhat, so is probably the optimal solution as of today, though it does have implications for how your source and destination systems are designed and built.
+
+Though event based architecture and messaging platforms such as Kafka are the solution to this mess, the problem is that most businesses are built on batch integration and unreliable point to point APIs. Though it's hard to know, I would say the split is 70% batch, 20% point to point APIs and 10% messaging in the large enterprises that I am familiar with.
+
+The problem is that when we run too many integration jobs with delayed and unreliable foundations, this leaks through to impact the customer experience. Take these frustrating interactions with your bank for instance:
+
+- Online banking being slow to update as you make transactions;
+- Delays before a requested statement is sent out or a letter issued;
+- Delays in opening accounts and being onboarded as a customer;
+- Being passed between different call centre departments and having to explain your request over again;
+
+Slow and unreliable batch data exchange is likely to be at the heart of these frustrating experiences.
+
+Now compare this to the Neo Banks who have experiences such as the below, where push notifications arrive on your phone the instant you swipe your debit card in a store:
+
+This shows that the payment event is instantly flowing through the system and immediately enhancing the user experience with no batch processing. This still makes me smile now as I know the amount of technology required to make it happen. I think the fact that startup banks can do this seemingly simple thing should be concerning for the incumbents as it demonstrates that they are built on real time foundations.
+
+To build these user experiences, companies need to implement an event driven architecture and move away from batch integration, point to point APIs towards real time streaming. This does go deeper than just modernising how you implement your applications, as discussed in this video.
+
+I believe that the move to event driven architectures and real time messaging are absolutely at the heart of the transformation that enterprises need to make. If we are building on batch integration, it is very hard to build personalised and responsive customer experiences, and hard to introduce intelligent automation and proactive use of data into business processes.

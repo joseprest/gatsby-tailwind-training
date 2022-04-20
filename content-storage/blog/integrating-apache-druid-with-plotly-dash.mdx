@@ -1,0 +1,148 @@
+---
+title: Integrating Apache Druid With Plotly & Dash
+slug: integrating-apache-druid-with-plotly-dash
+date_published: 2020-07-03T19:44:59.000Z
+date_updated: 2021-09-06T08:50:24.000Z
+excerpt: Integrating Druid with Plotly and Dash to build interactive applications and visualisations
+order: 12
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+Apache Druid is an open source database which is well suited for real time, analytical workloads. Druid is the database which underlies [Timeflow](https://timeflow.systems/)), our real time event processing platform, which we make fully available to our customers to use for their steam processing or subsequent offline analysis.
+
+Many of our customers would like to build rich applications on top of their data which Timeflow stores in Druid.  These applications could be line of business applications which incorporate slice and dice analytics scenarios, or more complex data science scenarios such as forecasting, anomaly detection or other statistical modelling.
+
+We have found that for these applications, [Dash](https://plotly.com/dash/) by Plotly is one of the fastest routes to getting bespoke applications into the hands of your users.  You can quickly build interactive apps which extract data, apply transformations and make it available for your users to interact with in arbitrary ways which goes beyond a traditional report or dashboard.
+
+For more complex scenarios, we might reach for something such as [React](https://reactjs.org/), but for many scenarios, having Dash as a low code, fast time to market option is just fine.
+
+In this article we have a walkthrough as to how to connect Druid and Dash.  First, after connecting to Druid, we will build some simple charts using Plotly dashboards and reports, which are often the basis of a Dash application. Then we will add further elements to show how a more interactive experience can be achieved within Plotly.   Eventually, we will then migrate this into a standalone Dash web application to illustrate the end to end process.  Full code examples are shared at the end of this article.
+
+The scenario we will use is a data scientist who would like to analyze the orders placed on his company's ecommerce website. The dataset is fairly large, with one order being created per second over a period of one week in order to demonstrate the power of Druid analytics underlying the solution.
+
+## **Extracting Data From Druid**
+
+The first task is to access our data which is stored in Druid. When working with Druid, we generally prefer the native HTTP API over a library such as PyDruid, which allows us to send queries such as Scan, TopN, GroupBy over HTTP in a JSON query format.
+
+In this example, we are querying Druid in order to get the orders data as a straightforward timeseries, in time and value pairs.
+
+    import json
+    import requests
+
+    # define the Druid URL
+    url = 'http://druid_ip:druid_port/druid/v2/?pretty'
+
+    # define the Druid query
+    query = {'queryType': 'scan',
+                  'dataSource': 'table_name',
+                  'intervals': &#91;'2020-06-03T07:00:00.000Z/2020-06-03T12:00:00.000Z'],
+                  'granularity': 'all'}
+
+    # run the Druid query
+    results = json.dumps(requests.post(url, headers={'Content-Type': 'application/json'}, json=query).json()&#91;1]&#91;'events'])
+
+## Exploratory Analysis
+
+Our next step is to convert the Druid result set into a Pandas Data Frame as this is the most convenient format to work with when performing intermediate statistical analyses and for passing into Plotly and Dash.
+
+    # organize the results of the Druid query in a pandas data frame
+    import pandas as pd
+
+    df = pd.read_json(results, orient='records')
+    df = df&#91;&#91;'__time', 'Value']]
+    df.rename(columns={'__time': 'time', 'Value': 'value'}, inplace=True)
+    df.sort_values(by='time', inplace=True)
+
+Pandas Data Frames have several built-in methods which allow the user to quickly summarize and ad-hoc analyse the data. An example is the describe() method, which calculates the descriptive statistics (such as the mean, the standard deviation, and the quartiles) of all data frame columns at once.
+
+    df.describe()
+
+Pandas also makes it easier for the user to manipulate and filter the data. For instance, the user could quickly calculate the number of orders whose value is above a given threshold of interest (let’s say $150) with the following code.
+
+    (df&#91;'value'] > 150).sum()
+
+## **Visualize Data Using Plotly**
+
+Now that we have the data in a Pandas dataframe, we can move into visualising the time series with Plotly. Later, we will take these Plotly components and move them into Dash, so our workflow is typically to build up our Plotly visualisations in a Jupyter Notebook before moving into Dash.
+
+The following code generates a basic time series plot using Plotly Express:
+
+    import plotly.express as px
+
+    fig = px.scatter(df, x='time', y='value')
+    fig.update_traces(marker=dict(color='#b5babe'))
+    fig.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+    fig.show()
+
+Which looks like so:
+This is obviously quite a simple plot, but a lot is going on here. We now have a visualisation connected to Druid, with all of the power that this implies for real time, slice and dice analytics. As data flows into Druid, the chart can be refreshed to view the current state of the world.
+
+## Adding Interactive Elements
+
+This type of charting can be done in a number of business intelligence and reporting tools. The reason we would use something more complex such as Dash is where we have additional demands to build a richer, more interactive _application_ rather than just a dashboard or a report.
+
+Our first step is to make the Plotly components much more interactive, adding buttons and sliders to control the chart, using code such as the below:
+
+    import plotly.graph_objects as go
+
+    # create the layout
+    layout = {'plot_bgcolor': 'white',
+              'paper_bgcolor': 'white',
+              'margin': {'t':10, 'b':10, 'l':10, 'r':10, 'pad':0},
+              'showlegend': False,
+              'yaxis': {'showgrid': True,
+                        'zeroline': False,
+                        'mirror': True,
+                        'color': '#737373',
+                        'linecolor': '#d9d9d9',
+                        'gridcolor': '#d9d9d9',
+                        'tickformat': '$,.0f'},
+              'xaxis': {'range':&#91;df&#91;'time'].min(), df&#91;'time'].max()],
+                        'autorange': False,
+                        'showgrid': True,
+                        'zeroline': False,
+                        'mirror': True,
+                        'color': '#737373',
+                        'linecolor': '#d9d9d9',
+                        'gridcolor': '#d9d9d9',
+                        'type': 'date',
+                        'tickformat': '%d %b %y %H:%M',
+                        'tickangle': 0,
+                        'nticks': 5,
+                        'rangeslider': {'visible': True},
+                        'rangeselector': {'buttons': &#91;
+                            {'count': 10, 'label': '10m', 'step': 'minute', 'stepmode': 'backward'},
+                            {'count': 30, 'label': '30m', 'step': 'minute', 'stepmode': 'backward'},
+                            {'count': 60, 'label': '60m', 'step': 'minute', 'stepmode': 'backward'},
+                            {'step': 'all'}]}}}
+
+    # create the traces
+    data = go.Scatter(x=df&#91;'time'],
+                      y=df&#91;'value'],
+                      mode='markers',
+                      marker=dict(color='#b5babe', size=5),
+                      hovertemplate='<b>Time:</b> %{x|%d %b %Y %H:%M:%S}<br>'
+                      '<b>Value:</b> %{y: $,.2f}<extra></extra>')
+
+    # create the figure
+    fig = go.Figure(data=data, layout=layout)
+
+    # display the figure
+    fig.show()
+
+    # export the figure
+    fig.write_html('orders_plot.html')
+
+The buttons in the top left corner allow the user to display only the values of the time series over a recent time window (such as the last 10 minutes, the last 30 minutes, or the last hour). The slider on the bottom allows the user to display only the values of the time series over a custom selected time window. The user can additionally hover on the data points with the mouse to display a tooltip with the corresponding time and value. Additional interactive features (such as zooming in and out) are provided by the Plotly modebar, which appears on hover in the top right corner. Finally, the plot can be exported in HTML format to be included in a website, interactive report or dashboard.
+
+## From Plotly To Dash
+
+Dash is a framework released by the people who created Plotly. It can be used for building "data science" oriented web applications in a very rapid manner, most often by building up the application from a series of Plotly plots. For examples of the types of applications that can be built, take a look at the [Dash Gallery](https://dash-gallery.plotly.host/Portal/).
+
+The next step therefore is to take the Plotly layouts described above, and wrap them in a parent layout in our Dash application which also adds further inputs and selectors. On the left, you can select the start and end interval windows. In the top right, we have the plot built up above. In the bottom right we have various data tables including a window into the data and summary descriptive statistics.
+
+We won't replicate all of the code in this blog post, but please clone from this [Github repository](https://github.com/benjaminwootton1981/druid-plotly-dash) to access the example of using Druid with Dash.
+Hopefully the scenario above demonstrates the concept of extracting data from Druid, converting and analysing with Pandas, and exposing the data in an interactive manner via Plotly and Dash. This is very powerful and a very rapid way of getting interactive Druid powered tools into the hands of users and a model we are using with various projects.

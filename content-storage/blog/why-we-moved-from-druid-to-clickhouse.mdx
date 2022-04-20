@@ -1,0 +1,43 @@
+---
+title: Why We Moved From Druid To Clickhouse
+slug: why-we-moved-from-druid-to-clickhouse
+date: 2021-10-21T05:27:21.000Z
+order: 150
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Timeflow is our low code platform for working with and analysing real time streaming data. 
+
+In order to store, search and analyse the data that we ingest, we naturally decided to use a high performance OLAP/column-oriented database for performing the required searches, analytics and aggregations. 
+
+For the first version of our application, we evaluated tens of databases in this space, and couldn't find anything which really hit the sweet spot in terms of fast ingestion, fast search, and capability for supporting our access patterns. Fortunately, we then landed on [Apache Druid](https://druid.apache.org/).  
+
+We found Druid to be very capable and well suited to our needs.  It is easy to natively connect to Kafka, ingest data quickly, and then execute all kinds of queries over terrabyte level datasets.  In many ways, Druid combines the best of OLAP, Time Series and even Relational databases (e.g. it has joins now and even seemed to perform well on single row lockups, which is not what an OLAP store is designed for in any way).  
+
+The challenges however were all from an operational perspective.  In our early development, it took a lot of bespoke DevOps code to be able to deploy a Druid cluster, and then create new on demand AWS environments using something like Terraform.  This was important for us due to our single tenant architecture for data isolation.  We potentially needed to create and manage tens or hundreds of Druid clusters in a fully automated manner.  
+
+Even after considerable engineering in this area, nodes would still fall over with random Zookeeper errors and out of memory errors.  We had to build considerable monitoring and telemetry code over the top of the cluster to build confidence that our clusters were stable.  None of this was simple due to Druids distributed Microservice architecture and the fact we were dynamically injecting hostnames through Ansible and Terraform as part of our single tenant cluster system.      
+
+Druid was also very memory hungry.  Once you started using it, it was too big to run on developers laptops so we had to deploy Druid environments to AWS which led to more cost and management overhead.  We were often tweaking and increasing JVM heap sizes, and in the end kept on over-provisioning our AWS instances just to avoid out of memory issues.  A small resilient cluster to meet our basic use cases then ended up approaching $500+ a month per customer in AWS cost, which directly impacted our business model as a SaaS platform.  
+
+We also experienced problems with the SQL API, which we initially used as our access pattern.  We experienced lots of strange and inconsistent behaviour with this route, so ultimately had to change to Druids native JSON API.  This was a considerable rewrite and made our application development slower because of the hundreds of ways we interact with the database.  I was always concerned about the issues with SQL as at the back of my mind as third party reporting tools such as PowerBI would likely need to interact via SQL so I wondered if we were storing up a problem for ourselves in the future.  
+
+We were quietly hoping that a full cloud-hosted/SaaS offeirng of Druid would be released by [Imply](http://imply.io), where we could simply enter a credit card, and have management of Druid offloaded to the experts.  Unfortunately, this hasn't come to market yet, and the only option is a more complex and expensive enterprise model of a managed service within your own AWS account.  
+
+In mid 2021, we decided to take on a ground up rewrite of our front-end.  With the architecture we chose, this was the best opportunity we would ever have in replacing Druid.  It was still a painful migration, but we decided to take on the challenge to reduce the TCO of the platform in terms of operational complexity and hosting costs. 
+
+After a second evaluation of the market we decided to migrate to [Clickhouse](https://clickhouse.com/) as our new datastore.  The main reasons were:
+
+- Clickhouse is extremely operational simple.  One binary and a few XML files that require very little tweaking.  This allowed us to strip away thousands of lines of DevOps automation and monitoring code;
+- Lower TCO for a resilient cluster even on AWS EC2;
+- The same rapid native ingestion from Kafka and immediate data availability which support real time use cases;
+- SQL is the standard native access pattern and not a second class citizen;
+- It feels like it performs better across multi-million row datasets, though we haven't completed detailed benchmarking so I will hestitate to go there.  Both solutions are very much within our tolerance threshold;
+- Materialised views are amazing, allowing us to real time transform and pre-aggregate data as it streams in;
+- Clickhouse have recently incorporated and raised funding, giving the same commercial support that attracted us to Druid.
+- The most important thing for me in startup mode is that it makes our developers productive and gives us the ability to change and pivot easily.
+
+This is not intended to be a criticism of Druid as it really is a fantastic platform which we are fortunate to access as open source software.  We were also in a slightly unique situation in that we were trying to automate the deployment and operation of potentially hundreds of clusters on a per customer basis.  Whilst we were trying to build an application, we were also trying to build a Druid automation and monitoring platform, which constantly felt like a distraction.  
+
+However, even with this said, I do think it's fair to say that if you want to use Druid, your use case and requirement for scale and immediate access does need to justify the cost and effort in deploying and managing the cluster.  When we have cloud based OLAP databases such as Snowflake, Redshift, BigQuery, and Elastic, and a "low maintenence" solution such as Clickhouse open to us, it is quite a big call to take on the management of a distributed OLAP datastore and something you need to go into with your eyes open.  

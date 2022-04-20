@@ -1,0 +1,40 @@
+---
+title: Introduction To Apache Spark
+slug: introduction-to-apache-spark
+date_published: 2020-07-21T11:21:26.000Z
+date_updated: 2021-09-07T09:14:23.000Z
+excerpt: A high level introduction to Spark
+order: 14
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+Apache Spark is an open source software platform for analysing and processing "big data". Originally developed in 2009, it is now the most widely deployed data processing engine that is used for use cases as diverse as bioinformatics, fraud detection, web log analysis, and customer churn profiling.  
+
+## Why Is Spark Needed?
+
+Data Analysts and Data Scientists can likely solve many of their analytical use cases and questions on a single laptop, using tools such as Excel or Python.  So why is a framework such as Spark necessary?  
+
+The main use cases for Spark arise when the data that we need to analyse is too big to store and process on a single laptop or server, or if the computations become too slow.   Despite the increase in compute power available to us,  this problem becomes more acute and common due to the general explosion in data volumes that we capture today.  
+
+To solve this scale problem, one approach is to divide and distribute the data and the processing over a *cluster* of many machines.  That way, the calculations can be performed in parallel on small subsets of data, before being combined into the end result we need. Spreading work over multiple servers introduces some complexity, but tends to give better performance and cost profile than simply buying bigger and bigger servers until we hit limits.
+
+[Apache Hadoop](https://hadoop.apache.org/) was the first framework that achieved widespread adoption for this kind of distributed parallel processing, popularising the MapReduce programming style and underlying many enterprise big data platforms.  Spark was developed as an evolution for some components of Hadoop, offering better performance, more flexibility, and a simpler deployment model.  
+
+## Use Cases For Spark
+
+When we have a Spark cluster created and the ability to parallel process our data, there are a number of things we can begin to do with our large datasets:
+
+- Search and analyse your data: Spark will allow you to load enormous datasets across your cluster of machines in order to search, filter, aggregate and interrogate them.  This type of work is of course bread and butter to relational databases and data warehouses, but even they do not scale to very large datasets, and tend to be limited to structured relational data;
+
+- For numerical analysis of your data: Beyond simple aggregations, Spark will allow you to move beyond the type of work a database might do, to more complex statistical work where you wish to reshape, analyse and interrogate the statistical properties of your data, and support use cases in the realms of forecasting, anomaly detection and other machine learning model creation;
+
+- To manage your data: Spark will allow you to move, filter, cleanse and transform your data between different destinations in a manner similar to traditional extract transform and load processes.  Again there are lots of tools in the ETL space, but these tend to hit limitations with large, complex datasets;
+
+- To process streaming data: Most Data processing works according to a batch model, whereby we ask questions of large batches of data.  Spark streaming allows you to move towards processing data in real time as it arrives in order to reduce the time to insight and give us continually updated results;
+
+- And More: Spark provides many more options and libraries for building and developing machine learning models, working with graph databases and much more, all across a distributed cluster in a resilient and robust way;
+
+In the data world, there are typically always choices about how to solve the problem.  To solve the problems above, we could reach for a relational database, a data warehouse, a NoSQL database, an ETL tool, or a streaming engine such as Apache Flink.  In this regard, Spark can be thought of a Swiss Army Knife which can be turned to all of these use cases, and do so with very large datasets at scale. 

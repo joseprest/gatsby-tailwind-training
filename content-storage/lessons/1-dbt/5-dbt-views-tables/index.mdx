@@ -1,0 +1,163 @@
+---
+tocTitle: Where Is This Used?
+title:  DBT Views and Tables
+slug: dbt-views-tables
+custom_excerpt: In this lesson we will learn how DBT can materialise to tables and views, and the associated incremental and ephemeral options.
+order: 5
+category:
+    - dbt
+premium_content: true
+---
+
+## Lesson Overview
+
+In this lesson we will learn about how DBT can build or materialize models as tables and views.  We will introduce these concepts and explain some of the considerations with regards to when to use which option.  We will also introduce the incremental and ephemeral materialisation options which are closely related.  
+
+## Introduction To Tables and Views
+
+In this section, we will introduce database views for those who aren't familiar with the concept. 
+
+_Tables_ are of course the heart a relational database, consisting of a set of typed columns and containing multiple rows of data.  For instance, we created a table in the [previous lesson](/executing-your-first-transformations) which can be queried like so: 
+
+```
+\c pizzastore
+set search_path to 'dev_pizzastore';
+select * from pizza_orders;
+```
+
+Showing all of the orders in the database:
+
+```
+ order_id | pizza_type | num_ordered
+----------+------------+-------------
+        1 | Margharita |           1
+        2 | Hawawain   |           5
+        3 | Margharita |           6
+        4 | Mushroom   |           2
+        5 | Mushroom   |           4
+        6 | Meat Feast |           1
+        7 | Margharita |           4
+        8 | Meat Feat  |           2
+        9 | Meat Feat  |           4
+(9 rows)
+```
+
+Imagine our business have a requirement to report on or identify the largest orders, which by our definition could include those orders where 4 or more pizzas were ordered.   This could be accessed with a simple query such as the following:
+
+```
+select * from pizza_orders where num_ordered >= 4;
+``` 
+
+Showing that 5 orders meet this criteria:
+
+```
+ order_id | pizza_type | num_ordered
+----------+------------+-------------
+        2 | Hawawain   |           5
+        3 | Margharita |           6
+        5 | Mushroom   |           4
+        7 | Margharita |           4
+        9 | Meat Feat  |           4
+(5 rows)
+```
+
+If this is a query we need to use often, or perhaps embed in other queries, we could then create a view which can be used as a convenient "named query" to always access this particular data in future:
+
+```
+create view large_orders as select * from pizza_orders where num_ordered >= 4;
+```
+
+We can then query this view as we would query a table:
+
+```
+select * from large_orders;
+```
+
+And get the same output as above:
+
+```
+ order_id | pizza_type | num_ordered
+----------+------------+-------------
+        2 | Hawawain   |           5
+        3 | Margharita |           6
+        5 | Mushroom   |           4
+        7 | Margharita |           4
+        9 | Meat Feat  |           4
+(5 rows)
+```
+
+If another order with more than 4 orders is inserted into the _pizza_orders_ table, this would subsequently be returned in the _large_orders_ view the next time it is queried.  Feel free to give this a test.  
+
+Views are simple convenience functions, giving us a mechanism for defining, naming and then accessing some view into the data.  
+
+The actual data still remains in the underlying _pizza_orders_ table and is not duplicated into the _large_orders_ view.  There is therefore no additional storage required and no overhead in maintaining the view. 
+
+## Materailisation Options 
+
+As we have shown in previous lessons, DBT works by taking data in some source table, and _transforming_ or  _materialising_ into some destination.   This destination can be either a table or a view, and the choice is up to the data engineer:
+
+### When To Materialise Tables
+
+- When query performance matters - Views are simply named queries, so when we access them, we need to requery the underlying table data, which could involve.  The data within tables is pre-computed and stored on disk, so it should be faster to access 
+- The data within 
+
+### When To Use Materialise Views
+
+- When there is a lot of data 
+
+## Controlling DBT
+
+When we create DBT models, we have a choice whether to "materialise" them as tables or views.  
+
+Technically, making this choice is fairly simple:
+
+```
+nano models/pizzas_sold_by_pizza_type.sql
+```
+
+And change this line:
+
+```
+{{ config(materialized='table') }}
+```
+
+To this:
+
+```
+{{ config(materialized='view') }}
+```
+
+When you execute _dbt run_ again, observe that we created a view instead of a table:
+
+```
+Running with dbt=0.21.0
+[WARNING]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.my_new_project.example
+
+Found 1 model, 0 tests, 0 snapshots, 0 analyses, 162 macros, 0 operations, 0 seed files, 0 sources, 0 exposures
+
+14:42:55 | Concurrency: 1 threads (target='dev')
+14:42:55 |
+14:42:55 | 1 of 1 START view model dev_pizzastore.pizzas_sold_by_pizza_type..... [RUN]
+14:42:55 | 1 of 1 OK created view model dev_pizzastore.pizzas_sold_by_pizza_type [CREATE VIEW in 0.09s]
+14:42:55 |
+14:42:55 | Finished running 1 view model in 0.20s.
+
+Completed successfully
+
+Done. PASS=1 WARN=0 ERROR=0 SKIP=0 TOTAL=1
+```
+
+So technically controlling DBT to output tables or views is simple, but choosing the right option requires an understanding of the tradeoffs between speed, storage, performance, cost implications etc.
+
+One rule of thumb is to start by simply materialising views, and then changing to tables when additional performance is needed.  
+
+
+## Summary
+
+In this lesson we discussed how DBT can materialise tables and views, and changed our previous materialised table to output a view instead. 
+
+We also discussed some of the relevant tradeoffs and implications as you choose between tables and views.  
+
+In the next lesson, we will look how we can move towards updating our materialised views incrementally rather than rebuilding them each time.  

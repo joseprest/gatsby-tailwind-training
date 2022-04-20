@@ -1,0 +1,30 @@
+---
+title: Materialised Views On Event Streams
+slug: materialised-views-on-event-streams
+date_published: 2021-01-20T03:40:20.000Z
+date_updated: 2021-09-03T14:41:16.000Z
+order: 120
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Imagine we have a stream of events representing new orders:
+
+```
+- Order { ID : 1, Category : Electronics, Value : 123 }
+- Order { ID : 2, Category : Homeware, Value : 456 }
+```
+
+Much of the move to event driven architecture is about responding to these individual events and building analytics over them in order to improve time to insight and make the business more responsive.
+
+However, there will always be much more traditional requirements that we might have against these events streams.  For instance, maybe we want a report of all of our orders where the value is greater than a certain value, or allow people to search a database of historical orders.
+
+To achieve this, we have previously streamed these events out into a third party data store such as a relational database or a NoSQL data store.  
+
+In a more abstract way, what we are doing here is “materialising” or “manufacturing” a static view of the current state of the world from the event stream.  This implies some overhead, because we need to worry about handling updates, deletes, and possibly think about transactions and out of order events to maintain the view.    
+
+There are technologies emerging which help with this problem, two of which are [KSQLDB](https://ksqldb.io/) and [Materialize](https://materialize.com/).  These open source technologies will help you to easily connect to an event stream, define a materialised view in SQL, and then query it again using SQL.  
+
+What’s more, these materialised views can be highly performant.  Say we have millions of orders and we are looking to perform a complex query with various joins across streams and Group-Bys, these materialised views are incrementally updated as records stream in.  This means that consuming queries are much faster because the whole result doesn’t need to be re-queried.  
+
+The concept and the technology for materialising views will grow in importance as front to back architectures becomes more event based.  As KSQLDB and Materialize are both very elegant solutions to this, we think they will grow in popularity very quickly.  

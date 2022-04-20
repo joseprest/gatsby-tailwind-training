@@ -1,0 +1,57 @@
+---
+title: What Is Apache Kafka and What Can It Do For Your Business?
+slug: what-is-apache-kafka-and-what-can-it-do-for-your-business-2
+date_published: 2021-09-03T14:10:06.000Z
+date_updated: 2021-10-19T10:47:36.000Z
+excerpt: An introduction to Apache Kafka
+order: 2image: /x.jpg
+featured_image: /x.jpg
+-- 
+
+## Introduction
+
+Over time, the typical business acquires more and more applications. Some will be bespoke, some off the shelf, some cloud hosted SaaS tools and some in the data centre.
+
+Over time, business requirements arise where these need to be integrated by exchanging data between them. For instance, every time an order is placed on our eCommerce website, a customer record should be created in the CRM system, the marketing system, and the ERP system.
+
+Next, people start to want to extract business intelligence from these systems in order conduct analysis using data from multiple transactional systems. The approach has traditionally been to “extract, transform and load” data from the line of business applications into a centralised data warehouse or data lake for the reporting and dashboards. This is essentially more data integration.
+
+This is all standard stuff which has been keeping developers busy since the dawn of time.
+
+There are a few long standing problems with these approaches though:
+
+- The integrations are all custom, and take development effort to implement and then maintain;
+- The integrations are point to point, meaning that you have to connect one source system to many destination systems, multiplying the development effort;
+- The connections and the extract, transform and load processes are fragile, often falling over or throwing errors;
+- When things go wrong, such as records being dropped, sent multiple times or translated incorrectly, these situations can be very hard to untangle and clean up the data.
+
+Architecturally, this all feels like a bit of a mess, with multiple point to point integrations exchanging data in large batches in an inflexible and fragile way.
+![](https://cdn.substack.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F671b079e-b704-4698-b816-eebc4b0a86bc_1024x846.png)
+In the early 2000s, people started adopting the *message broker* pattern, where we started putting messages onto centralised queues or topics, sometimes referred to as *Message Buses,* which subscribers could then listen to and process as events occured. Common technologies included Tibco, Websphere Message Broker, RabbitMQ and lots of others.
+
+Though the messy point to point integrations described above are still very much a reality, message brokers did help to decouple systems and move away from fragile point to point integrations, particularly in complex enterprise environments.
+
+In 2010, Apache Kafka was developed and released as an open source project by LinkedIn. Kafka gives companies similar advantages to message broker technologies in the way that it integrates systems in a decoupled and controlled manner, but has a number of benefits and key differences.
+
+Firstly, the non functional benefits include:
+
+- Kafka is fully open source so free to deploy and change;
+- Kafka is very lightweight to deploy, unlike the above examples which were heavyweight;
+- Kafka is extremely low latency and scalable to high volume data streams which reach web scale or IOT scale;
+
+Kafka is more than a just a better message broker though, and in fact refers to itself as a “distributed streaming platform” which has fundamental differences to a message broker. For instance:
+
+- Kafka operates more like a database and provides durability guarantees that go beyond traditional message brokers. We can be sure that once Kafka has the data, it has been replicated and stored on multiple servers in a resilient way;
+- With the above resilience guarantees, it is quite viable to leave data in Kafka for days, weeks, months or even forever as an audit log of what actually happened. If you later experience problems downstream, you can simply replay the messages from a point in time;
+- Kafka is fully distributed and can be configured to be resilient across multiple servers. Some organisations run clusters of hundreds or thousands of Kafka servers, with data partitioned across them;
+- Kafka has a huge ecosystem of connectors, stream processors, language bindings and other APIs which make it very easy to integrate into your estate.
+
+So to return to the question in the title, what can Kafka do for your business?
+
+- Simplifies your IT estate by removing point to point extract, transform and load integrations;
+- Allows you to become more real time and responsive as your technology and applications responds to real time events rather than large batch movements of data;
+- Allows you to process data at massive speed and scale in a reliable and robust way;
+- Allows you to get a secure, auditable and replayable log of exactly what happened in your business;
+
+![](https://cdn.substack.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F7fa04848-50ab-480d-b1e0-658ad6c57603_1024x809.png)
+Kafka has been deployed by over 60% of the Fortune 100 and growing, who are all securing these benefits. Kafka really has potential as a transformative technology for the customer experience and business performance.

@@ -1,0 +1,126 @@
+---
+tocTitle: TBC
+title: Kafka Performance Test Scripts
+slug: kafka-performance-test
+custom_excerpt: In this lesson we will learn about the Kafka performance test scripts, which can be used for measuring the performance of your Kafka deployment for both producers and consumers.  
+order: 8
+category:
+    - kafka
+---
+
+
+## Lesson Overview
+
+In this lesson we will learn about the Kafka performance test scripts, which can be used for measuring the performance of your Kafka broker or application when producing and consuming data.
+
+Note that this lesson assumes you are using our [training virtual machine](/running-training-environment) and have started the Kafka broker as per [this earlier lesson](/kafka-setting-broker).
+ 
+## Kafka Performance Test Scripts
+
+In the _./bin_ folder of your Kafka deployment you will be find the following two files:
+
+```
+kafka-consumer-perf-test.sh
+kafka-producer-perf-test.sh
+```
+
+These are used to test consuming and producing data respectively, by publishing and consuming large volumes of messages against your broker or cluster and measuring the results.  
+
+This is useful for both performance testing and load testing, whereby we would like to publish large volumes of data, and observe how the cluster responds and performs.  
+
+As we will see below, the performance tests can tell us details such as:
+
+- Amount of data transferred per second
+- Amount of messages processed pre second
+- Average processing times
+- Maximum processing times
+
+### Create A Console Consumer
+
+We will begin the lesson by starting a console consumer which we will use to monitor messages as they are generated:
+
+```
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic new_orders
+```
+
+This will begin a console consumer listening to the _new_orders_ topic.
+
+### Performance Test The Producer
+
+We can then simulate a series of records at high volume, pushing them into the same _new_orders_ topic.  The _num-records_, _throughput_ and _record-size_ parameters can be used to control the volume of messages:
+
+- num-records - The total number of records to generate during the test;
+- throughput - The number of records to send per second;
+- record-size - The size of the records in bytes.
+ 
+As an example, we can issue the following command to start a simulation of 100 records, each of 100 bytes, at a rate of 10 per second:
+
+```
+./bin/kafka-producer-perf-test.sh --producer.config config/producer.properties --topic new_orders --num-records 100 --throughput 10 --record-size 100
+```
+
+If everything is working well, you should begin to see messages to arrive at the consumer we setup in the first step above. 
+
+```
+LCTLNPENKLVJFLYLGNNWXWHZZWXLWBCRHZVHISZOFRZPBULSFXKFQNJIGJYBCGFPYTFAERUHAZASRTDEWAUIGWIQPKZPCI
+AJOQITXRTLRATEHMSMAQKLZOUIUNVHYKASMUPWDUKASWNGEBWCAYDASZJZLWYBMEXFNYXNHOVYCEXDPNPWYZLNBPJJWYNHQKFESI
+DFMTMBAZWZUSVJQCTSFYUXDQICTIEWDOYTGTZOHVKBFIBXJPBIXDMQYNNGUIVAWCVHCPGTPHKTDQNVKTMTEWERWOBFJVIWQEOAAB
+QQEYKLOOGHBBNVHHDNQZTSILOTWIOOOBVYHXFGEAPSVHXENJVCRWIMWKKHAWTOFMCQKKVOJJEHRIZEQSDNFMTJIDKAMQUAPUTQWJ
+JEJNMKPRSOYASPIJZQEYNPNOJXRAJNSHVPGGYWLQFGKLOEMZDXKFURIMFCNSQMEGEVQJSWEEDAHAMDEOJDCPJKZMVFRAVTPOMSCY
+GJTOXOLGCIVVVYLLUUFNSCGYHKPXCFNJGIMSXWAQMUSXMDGQFPJVFSHKMJVSFQCMGMKXCLAUMLQZUBJISKLOTUGZQUTSKZOAMMHA
+GHIASALHWQOGCGJLXULUFZCUAUMYKIDKWFNACQRGSAAYCZGLWHZVPLJYKZKLTPYFGEDPCRILJRWREXFITOIOEVYTDWQZAEEKFNEK
+UENSFPCRLYMJFLKJGRIACAFZVLPWMJNAEIXKTRMSQHMPPHGCDLPDULWQDROVIWATICTIEBABTHWPYSTQJOFPLLPOONOYRHLNODNQ
+RXNEJEYQTBJHZGTFWGAXZIIKFWFELLHHGBAFCKQYGHUOKGYHPSMJWXSXBFLIHPTQZYTYIUJNWLDTKLBUDEVUOFOCABLMPDDZEUWG
+EQCAVVAEUXSJAKFFRPJUJQBZTPFBDZWZUNRSKETJOPJDFKBLZNEVDNWNARUNDXFBVSFITKGIWWAUXMIYKYLWQIZSUJIQXWNXJDKV
+LDLDPXDCPGKPULAOSFGUQUEUQBMPUJLDNZQQRRITNFFNLZOLWSVZTQVMLRYIMJJVYADMBRQSZHYHJXOGQSPUVEVVDINQVIOVDJIC
+NSLZWPXJGNUQHPENCNBFOHXCADCWBWBEZSWUTQXZWULQJSSUQGTZNHMRBVMHTPIUZWQUXRMDJNSSPDEWJFPZXOMGFVTCYKNFRRZQ
+```
+
+These are random 100 byte records being created by the_kafka-producer-perf-test.sh_ script.  
+
+As the _kafka-producer-perf-test.sh_ script runs, we will see a status of it's performance periodically:
+
+```
+52 records sent, 10.2 records/sec (0.00 MB/sec), 28.1 ms avg latency, 805.0 ms max latency.
+```
+
+### Interpreting Results
+
+When the test completes, the performance test script will output details regarding performance of the test.  In this instance, we can see that we sent the requested 10 messages per second, with each message taking on average 16ms to publish.  The slowest message was 805ms and the 50th percentile was 5ms.
+
+```
+100 records sent, 10.085729 records/sec (0.00 MB/sec), 16.76 ms avg latency, 805.00 ms max latency, 5 ms 50th, 55 ms 95th, 805 ms 99th, 805 ms 99.9th.
+```
+ 
+### Performance Test The Consumer
+
+In the previous example, we created a console consumer, and tested the producer performance.  The other, arguably more useful exercise is to performance test the consumer:
+
+We can begin by consuming 100 messages from the topic.  By default it will start at the beginning of the topic:
+
+```
+./bin/kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic new_orders --messages 100
+```
+
+If succesfull, this will output some statistics about the consumer process:
+
+```
+start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec, rebalance.time.ms, fetch.time.ms, fetch.MB.sec, fetch.nMsg.sec
+2021-12-02 14:15:16:298, 2021-12-02 14:15:17:437, 0.0095, 0.0084, 100, 87.7963, 980, 159, 0.0600, 628.9308
+```
+
+Here we can see things like the start time and end time of the test, how much data was retrieved, and how many messages per second were retrieved.  In this case, we can see that our single node broker with a consumption process running was capable of consuming 628 messages per second.
+
+## Payload File
+
+In the example above, the producer performance test script was simply generating random strings of 100 bytes long.  To get more realistic tests, we may wish to send real messages, perhaps based on JSON if that is your internal format.  These messages can be specified using the _payload-file_ flag passed to the _kafka-producer-perf-test.sh_ script.  
+
+## Real World Kafka Benchmarking 
+
+Running a performance test on a single laptop doesn't tell us much, as we soon begin to hit limits on the machine such as the number of CPU cores.  In a more realistic situation, we would have the client and server running on different hosts, which would give us more compute capacity but introduce network latency.  We would also likely have Kafka clustered.  Kafka is a useful tool for testing this architecture. 
+
+Another scenario is to performance test your entire application using 
+
+## Summary
+
+In this lesson we looked into performance testing the Kafka broker using high volumes of data primarily generated with the _kafka-perf-test-consumer_ and _kafka-perf-test-producer_ scripts.  

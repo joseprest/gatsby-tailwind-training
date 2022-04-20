@@ -1,0 +1,26 @@
+---
+title: Combining Clickhouse MergeTree Engines and Materialized Views For Real Time Analytics
+slug: clickhouse-mergetree-materialized-view-analytics
+date_updated: 2021-11-27T09:34:38.000Z
+date_published: 2021-11-27T09:34:38.000Z
+excerpt: Why Databricks is experiencing significant market success.  
+order: 500
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Clickhouse Table Engines
+
+When creating a Clickhouse table, the user needs to specify a table engine to describe how data should be stored and managed.  Of these, the MergeTree engine tends to be the go to as it's the most general robust, robust and flexible options.  
+
+As well as the base MergeTree, Clickhouse includes specialised subtypes such as the SummingMergeTree and ReplacingMergreTree which provide additional logic as part of the merging process, such as rollups or only recording the last value for a key.  
+
+In this video, we demonstrate how we can build materialised views based on these table engines to provide a very elegant model for calculating derived views and analytics purely within Clickhouse based on some underlying table.  
+
+The end state is a base table of event data, and a series of materialised views which are updated asynchronously each time data in the underlying table changes.  
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/i7VYsf1e2qU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+In order to deliver near real-time scalable analytics with no external stream processing, this is one of the most elegant models we have seen.
+
+If you would like to learn more about Clickhouse, please visit [our hands on training course](https://timeflow.academy/categories/clickhouse).

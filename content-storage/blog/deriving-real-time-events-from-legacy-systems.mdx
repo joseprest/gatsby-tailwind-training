@@ -1,0 +1,25 @@
+---
+title: Deriving Real Time Events From Legacy Systems
+slug: deriving-real-time-events-from-legacy-systems
+date_published: 2021-01-18T05:46:41.000Z
+date_updated: 2021-09-03T16:18:34.000Z
+order: 110
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+As we know, a lot of business intelligence and data processing within enterprises is batch based, where periodically (e.g. daily) we exchange and process large volumes of data in batches of multiple records.
+
+Fundamentally, businesses are looking to speed this up in order to use data for operational purposes, to reduce time to insight, or to improve the customer experience.  
+
+A key building block for doing this is [event driven architecture](/in-business-everything-is-an-event) and event based data handling, where we process events immediately after they happen in order to derive a response.
+
+The challenge is that these businesses are generally still tied to legacy systems, or systems built on more traditional technology such as relational databases or data lakes.  Our task therefore is to generate real time events from technologies which are not really oriented in that manner.
+
+Fortunately, there are two key open source technologies we have found to be highly successful in this regard, which any team looking to evolve towards event based architecture should investigate.
+
+The first is [Debezium](https://debezium.io/).  Debezium allows you to Stream changes from your databases such as MySQL or Postgres using a technique called "Change Data Capture" or CDC.  As records are inserted, updated and deleted, events can be created and pushed to a destination such as Kafka where they can be processed in a decoupled manner.  This completely avoids changes to the legacy application and should not affect the performance or stability of the application.  It’s therefore a very quick win to mvong towards event orientation.  
+
+The second is [FluentD](https://www.fluentd.org/).  FluentD enables us to data log sources such as log files, SysLog or application runtimes, and push to a destination such as Kafka as they are created.  Again, we can hopefully evolve towards events with minimal if any application changes via this manner.
+
+Though this problem can be solved in various ways, these open source technologies have proven to be performance and extremely stable under high transaction volumes.  We think these technologies will win out be a key part of the event driven journey within enterprise.  

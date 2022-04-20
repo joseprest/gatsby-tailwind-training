@@ -1,0 +1,53 @@
+---
+title: Stream Processing vs The Data Warehouse For Real Time Analytics
+slug: stream-processing-vs-data-warehouse
+date_published: 2021-10-19T20:23:30.000Z
+date_updated: 2021-10-19T20:23:30.000Z
+order: 13image: /x.jpg
+featured_image: /x.jpg
+---
+
+Imagine that an eCommerce company would like to see a real-time summary of orders that have been placed in the last hour in order to continually optimise their online advertising.
+
+Without the real time requirement, there are many ways to solve this problem. With it however, we are slightly more constrained. Our options include:
+
+- Hook into the source applications and access the required data directly: In this example, this might involve querying an eCommerce or ERP platform either through the API or directly into the database. Generally, querying transactional systems and databases in this way is not advisable. It could compromise stability of the application, it could be fragile to schema changes and upgrades, and it could offer security challenges. We would also need to frequently 'poll' the transactional system to ask which new orders have been placed. All said, not a good direction;
+- Integrate the necessary data into a centralised data warehouse, OLAP store, or data lake as quickly as possible: This is the go-to approach today. It involves frequently extracting the data from the source application, and moving it into a centralised date warehouse or data lake for querying and analysis. Historically, this process has been slow and batch based with delays of hours or days before data is available. The modern data stack does improve this by implementing streaming technologies and continuous ingestion, but even much of that technology only aspires to be between 1 and 30 minutes in getting to a fully populated and materialised data available to the users;
+- Implement a 'stream processor': This involves somehow ingesting the order events immediately as they happen, and calculating and maintaining the analytics as new data streams in. In this instance, it could be that our stream processor simply maintains a table of orders which have been placed in the last hour, together with some summary analytics such as the total order value. These are all updated live as data is pushed into the stream processor.
+
+Many business with real time requirements are grappling between option 2 and option 3. They see the simplicity and the potential for doing faster data processing and analytics within the warehouse, so focus on faster ingestion and faster transformations in an aim to meet their business requirements. At the same time, data warehousing technology is evolving, giving us features such as Kafka integration, streams, scheduled tasks, external functions etc which make them more programmable and powerful. Platforms such as Snowflake and Clickhouse are at the cutting edge of this capability based on our experience and in some cases change the answer.
+
+## Data Volume and Velocity
+
+Though many business requirements do not have particularly onerous requirements for speed and data volume, there are an increasing number of businesses aspiring to be more real time and driven driven. Though Data Warehousing and OLAP stores are increasingly powerful and viable, we believe that at a certain requirement for data volumes and latency, businesses will continue to find scenarios where the data warehousing solution falls short. Two examples might be:
+
+- Big Data Scenario - Imagine that instead of orders, our business are interested in tracking millions of website clicks, engagement metrics or data from sensors. In that instance, transferring millions of raw events into a centralised location begins to be slow, expensive and of questionable value. Instead, it might make make sense to filter, aggregate and summarise this data in flight before processing and storing it;
+- Fast Data Scenario - Imagine that we wish to identify some pattern in event streams to immediately change the customer or employee experience, in a situation where seconds or minutes matter. Common examples include fraud detection, personalisation and operational analytics. The sooner we identify these situations the better, down to sub-second latency.
+
+It is when both big and fast data combine that stream processing really moves into it's own - when we have huge volumes of data and benefit from very rapid insights. This can be visualised like so, demonstrating the sweet spot of the stream processing route:
+
+![No alt text provided for this image](https://media-exp1.licdn.com/dms/image/C5612AQEC4m_lsKeXDg/article-inline_image-shrink_1500_2232/0/1633530313262?e=1640217600&amp;v=beta&amp;t=XOQoqxey2eB9eORq9bW4mcN94LdHS55V96KDhHcdVn4)
+
+Note how the diagram acknowledges that Data Warehousing and Data Lakes can clearly scale to enormous volumes, but when the "time to insight" requirement comes in, that is where stream processors begin to look attractive.
+
+## Complexity Of Analytics and Materialisations
+
+As well as speed and volume, there is another axis here which is complexity of the real time processing and materialisations that we need to do. If we just just wish to produce simple aggregations such as orders aggregated by hour, this is naturally a use case for staying within the data warehouse, and making use of features such as Materialized views to do these rollups efficiently.
+
+However, if wish to get into into even rudimentary statistical analysis on the stream, need procedural logic, or to interact with external systems and APIs, doing this directly within the database using tools such as stored procedures starts to smell even where it is possible.
+
+## Behaviours and Actions
+
+Finally, we need to think about what we would like to do with in response to the data that we ingest, transform and analyse. If we simply want to put records and analytics into a data store ready to be served by a dashboard, it's another argument to keep everything within the data warehouse, derive the data you need, and avoid the complexity of the stream processing world. However, if we wish to get into the realms of alerting or calling external APIs in response to data, we quickly want to break out of the database and into procedural code. In this circumstance, real time stream processing is the more natural home.
+
+All together, these are the metrics which I look for when choosing whether to go down the data warehouse or data lake route for "real time" analytics, or when to introduce stream processing. The data volumes, the required time to insight, the complexity of the analytics, and what we actually want to do having identified some situation of interest. Though the Keep It Simple approach would naturally make me the default solution data warehousing, in the right situation, I would be looking at the stream processing world.
+
+## Implementing Stream Processing
+
+If you have found yourself in the situation above, you'll land on frameworks such as Flink, Kafka Streams, Beam, Spark Streams and cloud vendors services such as AWS Kinesis Analytics in order to implement your stream processing logic.
+
+The challenge is that whilst these frameworks are very powerful, they are also complex to use and operate, and fairly Java/JVM centric.
+
+Our SaaS product at [Timeflow](/) was designed in response to this, and is aimed at making highly scalable stream processing available through a low code SaaS tool which can be used by semi-technical business users.
+
+If anyone is implementing real time stream data and analytics either through the modern data warehouse or stream processing route we would welcome the opportunity to discuss the space with you.

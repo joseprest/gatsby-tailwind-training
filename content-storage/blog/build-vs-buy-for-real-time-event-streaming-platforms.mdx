@@ -1,0 +1,37 @@
+---
+title: Build Vs Buy For Real Time Event Streaming Platforms
+slug: build-vs-buy-for-real-time-event-streaming-platforms
+date_published: 2020-10-19T08:00:00.000Z
+date_updated: 2021-10-20T09:44:18.000Z
+order: 105
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Over the next few years, many businesses are going to be building real-time streaming data platforms based on data lakes and data warehouses.  
+
+The aim of these initiatives will be to improve customer service and business efficiency, by more rapidly processing and responding to data.  
+
+Most of these event streaming architectures will follow a similar pattern and use very similar technologies:
+
+- Some mechanism for extracting data from source websites and applications, and turning this data into a stream timestamped events;
+- Some streaming data engine, which will usually be Kafka or occasionally a cloud-managed service such as Kinesis;
+- A stream processing component, such as Kafka Streams, Flink or Spark Streams to pre-process, analyse and aggregate the streaming data;
+- A data lake or warehouse to store the post-processed data and make it available for consumption;
+- Various means of accessing and analysing the data, including notebooks, application APIs and reporting front-ends in ways more optimised for real time streaming event based data.
+
+The benefits of these streaming platforms are huge, including faster time to insight, automation of business processes, lower storage costs, and simplifying the data estate away from batch ETL.
+
+This said, the engineering effort of a real time data platform isn’t trivial, and I think much of it will be reinventing the wheel with architectures such as the above being deployed over and over again.  For this reason, we need to be careful before implementing yet another Kafka/Data Lake/Spark based data platform.  
+
+Here is how we advise companies to go about this journey:
+
+- Firstly, it obviously makes sense where possible to work in the cloud.  This way, we avoid the need to build and manage infrastructure and benefit from consumption based pricing and elastic capacity.  This is largely a settled question by now.
+- Secondly, it makes sense to use cloud managed services and SaaS such as Confluent Cloud for messaging, analytical environments such as Snowflake and Databricks for data processing and storage, and SaaS reporting tools to avoid complexity there.
+- Next, many companies are implementing combinations of data lakes and data warehouses to serve different use cases.  With the advent of the Data Lakehouse architecture, we can potentially avoid a huge duplication of technology and standardise on one platform.
+
+With careful technology choice and embracing SaaS, significant engineering effort can be saved which can be redirected towards building analytics that actually move the needle for your business.
+
+Moving a step beyond this, our platform, [Timeflow](/), can help to fully avoid the cost and overhead of managing any technology, providing an entire real time analytics stack as a low-code SaaS service.  Though Timeflow does not aspire to be as flexible as a bespoke streaming platform based on a technology such as Spark, it does allow businesses to implement streaming analytics with virtually no technology overhead.  
+
+Please feel free to [make contact with us](mailto:hello@timeflow.systems) to discuss the tradeoffs of these various routes. 

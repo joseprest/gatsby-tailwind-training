@@ -1,0 +1,62 @@
+---
+title: How DBT DevOps Enables Data Teams
+slug: how-dbt-devops-enables-data-teams-devops
+date_published: 2021-09-03T13:14:13.000Z
+date_updated: 2021-10-19T10:48:08.000Z
+excerpt: How DBT raises the bar for Data Engineering teaams.
+order: 11
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+[DBT](https://www.getdbt.com/) is increasingly being deployed within modern data stacks to carry out data transformation.
+
+An example transformation requirement might be to take all of the incoming customer orders, clean up the data for consistency, and aggregate it into a “sales by region” summary table for our business users.
+
+A further example might be to then take this aggregated sales data, identify products low in stock in each region, and produce data in the correct format to place an order with our supplier.
+
+Companies have been doing this type of Extract, Transform and Load (ETL) work for years, and it’s a very mature field with established software and patterns. However, DBT’s approach is really a huge step forward in modernising the process for the cloud database age.
+
+### From ETL to ELT
+
+Historically, businesses used a process referred to as ETL to populate data warehouses. This involved *Extracting* data from source applications and databases, *Transforming* it into the required formats, and then *Loading* it into the warehouse for consumption.
+
+DBT flips this process around by executing the transformations directly within the database or data warehouse, *after* it’s been loaded. The process therefore changes to Extract, Load and Transform or the acronym ELT.
+
+This sounds like a small change, but it has some positive implications:
+
+- Rather than only keeping the transformed data in the warehouse in a rigid format, the source data can be loaded without delay, and then kept around and made available for other ad-hoc analysis or machine learning use cases. This starts to make your warehouse feel more like a data lake, whereby we keep large volumes of structured and unstructured, pre-processed data available for arbitrary use cases alongside our warehouse;
+- Rather than be a dumb repository, the warehouse can incorporate more and more sophisticated transformations that support user requirements. For instance, maybe we could take our customer order data and add feature data to make it easier for our data scientists. This will of course be kept up to date as new orders are loaded into the data warehouse. This is like a more dynamic evolution of the Data Mart idea;
+- Doing the transformations within the database is simpler as there is less external technology to deploy, manage and learn, and no need to store intermediary data. The transformations will likely be faster to run, and we can make use of the full power of the database including the security model, user defined functions and cloud elasticity;
+
+This shift from ETL to ELT has been made viable by industry developments such a cheap cloud storage such that provided by AWS S3, and the separation of storage and compute provided by databases such as Snowflake or Redshift. Indeed, these modern data stacks are where DBT is finding it’s home.
+
+### **Problems With Traditional ETL**
+
+Traditional ETL has always been fairly clunky and inefficient and has been an overdue a modernisation of approach. Some of the most common problems we find with it are:
+
+- The schema within data warehouses is often strongly defined and controlled. The emphasis of ETL was therefore on getting data into the warehouse in the correct “one true” format, putting the burden on the people loading the data and making the process of getting data into the warehouse slow and fragile.
+- This warehouse and the ETL processes would usually be managed by centralised data teams. These teams would be a fairly siloed bottleneck, always behind with the needs of the business for integrating and transforming the data.
+- The ETL stacks and scripts would often be fragile, error prone, and difficult and slow to change.
+- The tools providing ETL would often be GUI based and proprietary. Not only would they be expensive to license, they would also require specialist skills. This meant that neither the producers or consumers of the data would have access to the ETL scripts or the ability to make changes to them.
+- Bringing ETL into anything which defines a software development lifecycle was tricky. For instance, the ETL process was always identified as being difficult to source control, version and test. Implementing the concept of development, test and production environments with accurate data management was also way behind the state of the art in the software development world.
+
+All of this would ultimately add up to limited confidence in data, errors in the data and slow time to deliver and innovate with data.
+
+### **DBT and DevOps**
+
+Modern product teams are using “DevOps” practices to automate their processes and deployments, improve reliability and repeatability, improve collaboration by breaking down organisational siloes, and reduce time to market.
+
+DBT brings these DevOps practices into the data and ELT realm, primarily by implementing a Software Development Lifecycle around data transformation. For example:
+
+- The scripts which describe the transformations are based on SQL and stored as simple text files and configuration files. These can be therefore be stored in a source code management system, included in branching strategies and code reviews, and versioned properly so we have repeatable builds and deployments;
+- DBT scripts can be ran using a lightweight command line interface. This could happen on the developers desktop, the analysts desktop, or incorporated into CI/CD deployment pipelines and ran with something like Jenkins;
+- DBT incorporates testing and assertion frameworks to ensure that the transformation runs successfully and produces correct and consistent idempotent results on each run;
+- DBT models can be chained together into pipelines with dependencies, meaning that one step can only run if the proceeding one is successful. Again, this can be incorporated into the CI/CD process for increased reliability and robustness as we promote changes through environments;
+- DBT is aware of environments and profiles, meaning that we can easily execute our scripts against development, test and production environments in a controlled way. Integrating with something like Snowflake zero copy clones really makes production realistic testing of data transformations a reality;
+
+In addition to the automation and SDLC benefits, DBT also supports more collaborative ways of working and breaks the dependency and bottleneck on central data teams. For instance, because DBT is based around SQL and simple configuration files, we can break out of the central data team, and allow different teams to have access to and potentially take ownership of their DBT scripts.
+
+All in all, DBT is a great tool for teams that want to improve how they manage their data and serve their business. We plan to be writing more about it and its role in the modern data stack in the coming weeks.

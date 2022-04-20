@@ -1,0 +1,100 @@
+---
+title: Understanding The Load And Performance Of Your Snowflake Warehouse
+slug: understanding-the-load-performance-of-your-snowflake-warehouse
+date_published: 2021-09-10T10:43:38.000Z
+date_updated: 2021-10-19T17:02:15.000Z
+excerpt: Though Snowflake generally performs extremely well, DBAs from a more traditional background can feel as though they are flying blind.
+background_color:
+  - "#cf0808"
+  - "#f07878"
+order: 17
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+Due to its focus on simplicity and the SaaS delivery model,  Snowflake has _relatively_ few options for understanding and then optimising performance.
+
+Though Snowflake generally performs extremely well, DBAs from a more traditional background can feel as though they are flying blind, and want to see more detail on exactly what is happening in the system, how it is performing, and where the hot spots are.
+
+This becomes particularly relevant when we have users complaining of slow queries.  Good DBAs would rather dig into what is happening rather than simply throwing more, bigger warehouses at the problem and incurring unnecessary costs.
+
+Fortunately, there are enough areas of transparency to help us do this.  These are outlined below:
+
+## WAREHOUSE_LOAD_HISTORY
+
+The WAREHOUSE_LOAD_HISTORY table gives you a few useful metrics to begin to understand the amount of concurrent load on the system, including:
+
+- The average number of queries running simultaneously;
+- The average number of queries blocked in the period waiting for a warehouse;
+- The average number of queries waiting for a data warehouse to start;
+
+The data in this view is split into periods of 5 minutes.  The number is then derived by looking at how many queries are running concurrently _on average_ over for the period.  For example, if there are 2 and only 2 long running queries for the whole period, the number would be 2.  If there are 100 queries, but they all run perfectly one after the other, the average concurrent load would be 1 as there is zero overlap.
+
+When a virtual warehouse is at capacity, it will need to block and queue queries until others are complete.  This is therefore a very good indication of performance issues as our virtual warehouses become overloaded.  The AVG_QUEUED_LOAD figure describes this contention, and is calculated in the same way as AVG_RUNNING.  For example, if 2 and only 2 queries were blocked and waiting for the capacity, the number would again be 2.
+
+If you see some blocking on the warehouse, this is not necessarily a problem and it may be something you can accept if it doesn't impact your users.  This way, you can keep your virtual warehouses small and cost effective.
+
+The final figure is the AVG_QUEUED_PROVISIONING metric.  This describes the average number of queries waiting for a warehouse to be instantiated, and is useful in understanding whether we are suspending and resuming warehouses in an optimal manner considering the cost vs performance tradeoff.
+
+All metrics can be retrieved like so:
+
+    select WAREHOUSE_NAME, START_TIME, END_TIME, AVG_RUNNING, AVG_QUEUED_LOAD, AVG_QUEUED_PROVISIONING from SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY ORDER BY START_TIME DESC;
+
+Though we used simple numbers above to illustrate the point, in reality, the number of queries being executed and blocked are constantly fluctuating and overlapping with one another.  Occasionally the database will sit idle, so both numbers can move around a lot and potentially be a number less than 1.
+
+A table function version is also available which rolls up the data to larger periods than 5 minutes for convenience if you are analysing e.g. over a period of weeks.
+
+    select from table( WAREHOUSE_LOAD_HISTORY )
+
+Note that the data in this table and the table function are delayed by up to 3 hours.
+
+The WAREHOUSE_LOAD_HISTORY data is also displayed visually in the Snowflake frontend.   It is accessed by clicking on the virtual warehouse.  This data corresponds to the WAREHOUSE_LOAD_HISTORY table and again has the three hour delay.
+
+## SNOWFLAKE_METERING_HISTORY
+
+Snowflake also exposes a view called SNOWFLAKE_METERING_HISTORY, which shows the credits used, broken down by compute time and cloud services usage.
+
+    select * from SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY ORDER BY START_TIME DESC;
+
+Though this is related to cost rather than performance, we can also view this as an efficiency measure, i.e. for a given number of queries, how much did the usage cost?
+
+We could then for instance increase the size of our virtual warehouse, serve our queries in less time, and then ultimately pay less despite the increased per second cost.  For this reason, it can be a useful table too in understanding relative performance when optimising our virtual warehouse layout.
+
+## Query History
+
+The next view to consult is the QUERY_HISTORY view, which archives all of the compilation, execution and queue times for all queries.  This data can then be aggregated by warehouse and perhaps analysed over time to see how it trends.
+
+    select compilation_time, execution_time, queued_provisioning_time from SNOWFLAKE.ACCOUNT_USAGE.query_history;
+
+Alternatively, we can also monitor the same query for different sizes and configurations of virtual warehouses, to understand whether creating new or creating larger warehouses actually improves our key query performance.
+
+## Spilled Bytes
+
+In the above queries, we are looking at the throughput and performance of queries, which is mainly limited by CPU capacity in terms of nodes, CPUs and cores.
+
+Snowflake virtual warehouses also have memory associated with them.  When a server is running low on memory, it will look to write temporarily to disk, either local or remote.  As this is slower than operating in memory, this is something to monitor for and try to avoid where possible.
+
+Snowflake refers to this process as spilling.  Queries which are being impacted by this can be found in the query_history table, where the result is broken down by local and remote writes.
+
+    select * from query_history where bytes_spilled_to_local_storage > 0 or bytes_spilled_to_remote_storage > 0;
+
+Though both local and remote storage are much slower than operating purely in memory, writing to remote storage is the worse of the two as it's obviously slower than local SSD storage.
+
+## Caching Performance
+
+Snowflake uses a number of caches to improve performance.  If your underlying data hasn't changed, in many cases, Snowflake can simply return the same results from the cache without any re-computation.  Maximising use of these caches is obviously a key lever in improving performance.
+
+The first layer of caching is within the virtual warehouse, whereby data is cached on local disk where access is faster.  The amount that this cache was used is in a given query profile, under a table scan step alongside the metric 'percentage scanned from cache':
+Though this local disk caching is a transparent process, the main way we have influence over this is how aggressively we suspend and resume the virtual warehouses.  If we suspend too aggressively, people have to start from a cold cache, meaning that all of their queries take longer and load builds up.  We can of course be more conservative in shutting down virtual warehouses to keep our caches warm.  This has a cost implication, but it might actually save money whilst also improving user experience.
+
+The second layer is a higher level results cache, which exists within the shared services tier and therefore outside of any particular data warehouse.  There is less opportunity to influence this and understand how it is performing.
+
+## What Do We Do With This Information?
+
+When we have a good understanding of whether our queries are being blocked, running slowly or costing too much, the main tool in our arsenal is changing the virtual warehouse configuration.  We could look to add more warehouses, move to a multi-clustered virtual warehouse to add parallelism, or move to a larger sized warehouse to add CPU horsepower or reduce spilling.  This is a key part of the Snowflake DBAs responsibilities.
+
+Optimising the queries is likewise a key activity in improving performance, making them more efficient and reducing load from the database.  Some of the tools above will shine a light on which queries are slow, spilling, resulting in high cost or experiencing frequent cache misses.
+
+Finally, monitoring some of these views with your an observability platform such as [Datadog](https://docs.datadoghq.com/integrations/snowflake/) is  justifiable in a business critical situation.  Failing that, creating a dashboard of your key metrics in your [preferred business intelligence tool](https://looker.com/platform/blocks/source/cost-and-usage-analysis-by-snowflake) is a worthwhile investment to avoid manual monitoring of these performance issues.

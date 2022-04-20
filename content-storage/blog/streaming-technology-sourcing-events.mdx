@@ -1,0 +1,51 @@
+---
+title: Streaming Technology - Sourcing Events
+slug: streaming-technology-sourcing-events
+date_published: 2021-03-15T11:45:34.000Z
+date_updated: 2021-09-14T22:12:11.000Z
+order: 13
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+In order to move towards (Event Streaming and Event Based Architecture)[/in-business-everything-is-an-event], the first thing we need to do is source data in real time and publish it onto an event stream.
+
+Even this first step can be difficult, because many applications do not “publish” events as they are entered by users. Instead, these applications interact directly with a proprietary relational database specific to their application where the data then remains trapped.
+
+This is equally true for line of business applications, SaaS platforms such as Salesforce, and even web analytics platforms such as Google Analytics. The data is simply hard to extract as real time streams.
+
+For this reason, we often need to implement the technology to source real time event streams ourselves. Sometimes we can do this by making changes to our source application, and sometimes we have to interrogate the source application through APIs or by interacting with their database and database extracts in order to get them.
+
+This sounds like a lot of work and even a barrier to moving towards streaming architectures. However, we have experienced that it is no more onerous than extracting data using traditional ETL tools and approaches whilst moving organisations to a much more modern data architecture.
+
+## Techniques For Generating Events From Legacy Systems
+
+So our task as data engineers is to take these unfriendly sources, and turn them into streams.
+
+Fortunately, there are a few technologies and platforms which will help us to achieve this so we aren’t starting from scratch each time:
+
+## Kafka Connect
+
+Kafka Connect is part of the Kafka and Confluent ecosystem. It is used for exchanging data with external system such as applications, databases and other message queues for both reading and writing.
+
+Kafka Connect could for instance connect to a database via JDBC, send all of the historical records, then poll the database every minute for new updates. This is ultimately database polling and is not real time, but is likely to be much faster than periodic batch exchanges and at least starts us moving towards events and continuous data integration.
+
+As well as Databases, Kafka Connect supports things like traditional message queues or connecting to applications such as SalesForce or ServiceNow, giving you a consistent mechanism for integrating data.
+
+## Debezium
+
+Debezium allows us to extract events from popular databases such as MySQL. Rather than connecting at a JDBC level as with Kafka Connect, Debezium works at a lower level and listens to databases transaction logs in order to turn them in a real time stream of events. This is more performant, lighter on the database, and more real time. This technique is often referred to as Change Data Capture.
+
+## Singer
+
+Singer is referred to as the open-source standard for writing scripts that move data. It allows you to write simple scripts which listen to data sources and then turn the updates into JSON based events which can be published as they are found.
+
+## Streaming ETL Tools
+
+Most data engineering has historically involved batch extract, transform and load. Tools such as StreamSets and Striim are an evolution of this idea, but are more modern, cloud native / SaaS tools which can both be used to deliver batch and continuous data from sources to endpoint reliably. These tools are based on visual workflows and use approaches which will be more familiar to the traditional ETL engineer.
+
+## Sourcing Events
+
+Many people think that the readiness of their applications is a barrier to moving towards streaming architectures, but as this article shows, there are a many routes to extracting data from data sources which are not at first geared up to it.
+
+By deploying these technologies, you’ll be able to integrate your data faster, build real time analytics and implement event processing scenarios where systems automatically respond to captured events. Though streaming data integration is a low level concern, it can have enormous impact on your customer experience and business efficiency.

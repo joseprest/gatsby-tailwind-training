@@ -1,0 +1,37 @@
+---
+title: Big Datas Elephant In The Room
+slug: big-datas-elephant-in-the-room
+date_published: 2020-09-15T22:06:16.000Z
+date_updated: 2021-09-03T14:39:30.000Z
+order: 10
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+For many years, "Big Data" was a major buzzword in enterprise IT. The theory was that as data volumes grew, we would need different approaches to ingest, store, process and analyse this data and turn it into competitive advantage.
+
+Responding to this, many enterprises implemented the associated technologies and architectures &#8211; Hadoop, Hortonworks, Datastaxx, MapR, Cloudera etc &#8211; and set to work sucking in data from across their enterprise into these databases ready for analysis.
+
+Many of these projects took the approach of "build it and they will come", building a centralised all-singing-all-dancing "big data platform" which would sit strategically across the enterprise. They also invested huge amounts of time, money and effort in ETL'ing data into these platforms from source systems around the business.
+
+Interestingly, less effort was invested in actually using and drawing value from this data when it was there.
+
+Over the years, thousands of these enterprise wide big data platforms were built and populated, but ultimately failed to deliver business value and began declining in strategic importance. By the time they are consigned to the graveyard, I suspect that very few of them ultimately will have had positive ROI.
+
+Over the next decade, these will replaced by more modern cloud hosted data lake and streaming architectures, and my hope is that we don't simply repeat the same mistakes.
+
+The elephant in the room throughout this whole sad story was that most companies _simply do not have a big data problem._ For most use cases in most businesses, they can simply put their data into RDBMs databases such as MySQL or SQL server, maybe scale some of them up and out, and are then able to answer the questions that they need with little ceremony. _When you are reporting on business events and activities performed by humans, for the most part the data volumes simply don't get that large._
+
+If we accept this, as an industry, we could have invested their time much wore wisely
+
+-- Focus on velocity rather than volume of data\*\* -Rather than recording everything that happened for all of time to enable ad-hoc centralised reporting and analysis, I would rather know about the few things which I'm actually going to act on, but much sooner and more proactively.
+
+-- Focus on sophistication of analytics over volume of data\*\* - Rather than capturing more and more data, I would rather focus on the really interesting statistical insights into the datasets and how they are changing over time. It's interesting how data Science didn't really hit enterprise until later in the decade, when to me the whole idea of sophisticated analysis of small data should have arrived before we scaled up to big data.
+
+-- Integrating data into customer experience and operational processes\*\* - Big data platforms and data warehouses can guide humans, but there was not enough focus on taking the insights and analytics and calling back out to source and destination systems to change the customer experience and operational processes in response to the data. Even now, very few companies are doing this when it's a wide open opportunity to extract value from analytics.
+
+I view the mistakes that were made as "working hard" rather than "working smart". We've been moving all of this data around and making big investments in centralised platforms, when one small but more sophisticated and automated deployment with a clear business case would have had much higher impact.
+
+These lessons from history are important to consider as we move forward to more modern data architectures. Otherwise, the risk is that we simply repeat the same mistakes with slightly more modern technology.
+
+Bearing this in mind, our focus is very much on finding small discrete business cases, then deploying intelligent analytics which respond very quickly and proactively, and ideally impact the real world through automation as the insight is identified. To me, this has much more opportunity than simply building another data platform.

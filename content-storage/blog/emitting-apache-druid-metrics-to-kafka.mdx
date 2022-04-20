@@ -1,0 +1,104 @@
+---
+title: Emitting Apache Druid Metrics To Kafka
+slug: emitting-apache-druid-metrics-to-kafka
+date_published: 2021-03-22T13:48:04.000Z
+date_updated: 2021-10-19T10:48:55.000Z
+order: 111
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Apache Druid captures detailed metrics about how it is operating and performing, including query performance, memory usage, CPU utilisation, ingestion speed and more.  
+
+We may need to capture and monitor these metrics in order to investigate problems or identify proactive optimisations which can improve the performance of the cluster.  
+
+In this article we explain how this process is turned on and managed using configuration files.  As many people are also using Kafka alongside Druid, we also explain how to push the metrics to Kafka where they can be routed and processed more freely than they can in log files.
+
+## Configuring Metrics Emitting
+
+By default, Druid doesn't emit any metrics until this process is explicitly turned on.  
+
+As you may know, the Druid configuration files are organised based on the type of cluster you are starting.  For the purposes of this demo, we can work with a nano single server on a local laptop, so we would start with the configuration files stored here:
+
+    /Users/benjaminwootton/development/_tools/apache-druid-0.20.1/conf/druid/single-server/nano-quickstart/
+
+Though we can configure components individually to capture different metrics in different ways, we can begin by editing properties which are common to all servers in the common properties file.  
+
+    vim conf/druid/single-server/nano-quickstart/_common/common.runtime.properties
+
+Checking in this file, you can see that we are setup to log metrics to a "noop" emitter &#8211; i.e. "no operation" or do nothing with the metrics.
+
+    druid.emitter=noop
+    druid.emitter.logging.logLevel=info
+
+Though our ultimate destination is Kafka, let's briefly log to a file to see what happens.   This can be achieved by changing the *noop* to *logging* to request that metrics are logged to the log file.  
+
+    druid.monitoring.monitors=["org.apache.druid.java.util.metrics.JvmMonitor"]
+    _common/common.runtime.properties:druid.emitter=logging
+    _common/common.runtime.properties:druid.emitter.logging.logLevel=info
+
+If you restart Druid, your metrics will start logging to component specific log files such as the following broker log file every minute by default.  
+
+    /Users/benjaminwootton/development/_tools/apache-druid-0.20.1/var/sv/broker.log  
+
+As an example, you should fine JVM related metrics related to memory usage and garbage collection:
+
+    2021-03-22T11:05:08,343 INFO [MonitorScheduler-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T11:05:08.343Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metric":"jvm/gc/mem/max","value":536870920,"gcGen":["old"],"gcGenSpaceName":"sun.gc.generation.1.space.0.name: space  string [internal]","gcName":["g1"]}
+     2021-03-22T11:05:08,343 INFO [MonitorScheduler-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T11:05:08.343Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metric":"jvm/gc/mem/capacity","value":198180872,"gcGen":["old"],"gcGenSpaceName":"sun.gc.generation.1.space.0.name: space  string [internal]","gcName":["g1"]}
+     2021-03-22T11:05:08,343 INFO [MonitorScheduler-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T11:05:08.343Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metric":"jvm/gc/mem/used","value":0,"gcGen":["old"],"gcGenSpaceName":"sun.gc.generation.1.space.0.name: space  string [internal]","gcName":["g1"]}
+     2021-03-22T11:05:08,344 INFO [MonitorScheduler-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T11:05:08.343Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metric":"jvm/gc/mem/init","value":508559368,"gcGen":["old"],"gcGenSpaceName":"sun.gc.generation.1.space.0.name: space  string [internal]","gcName":["g1"]}
+     2021-03-22T11:05:08,345 INFO [MonitorScheduler-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T11:05:08.345Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metric":"jvm/heapAlloc/bytes","value":887472}
+
+In files such as broker.log, you will also see metrics specific and relevant to the broker such as these on query performance and data processed.  
+
+    2021-03-22T12:11:02,837 INFO [HttpClient-Netty-Worker-3] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T12:11:02.836Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1"
+    ,"metric":"query/node/bytes","value":8119,"dataSource":"ecommerce_browsed","duration":"PT86400S","hasFilters":"false","id":"33f92cf2-f97f-42a7-bd99-28d900645b71","interval":["1970-01-01T00:00:00.000Z/1970-01-02T00:00:00.000Z"],"server":"l
+    ocalhost:8100","type":"segmentMetadata"}
+    2021-03-22T12:11:02,848 INFO [DruidSchema-Cache-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T12:11:02.848Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metr
+    ic":"query/cpu/time","value":28198,"dataSource":"ecommerce_browsed","duration":"PT86400S","hasFilters":"false","id":"33f92cf2-f97f-42a7-bd99-28d900645b71","interval":["1970-01-01T00:00:00.000Z/1970-01-02T00:00:00.000Z"],"type":"segmentMet
+    adata"}
+    2021-03-22T12:11:02,849 INFO [DruidSchema-Cache-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T12:11:02.849Z","service":"druid/broker","host":"localhost:8082","version":"0.20.1","metr
+    ic":"query/time","value":156,"context":{"queryId":"33f92cf2-f97f-42a7-bd99-28d900645b71"},"dataSource":"ecommerce_browsed","duration":"PT86400S","hasFilters":"false","id":"33f92cf2-f97f-42a7-bd99-28d900645b71","interval":["1970-01-01T00:0
+    0:00.000Z/1970-01-02T00:00:00.000Z"],"remoteAddress":"","success":"true","type":"segmentMetadata"}
+
+## Monitors
+
+Druid has the concept of monitors which extends the metric system to capture additional types of metrics.  These also have to be explicitly turned on in the configuration file in order to capture additional metrics 
+
+By default, the JVM Monitor is configured in this way in the above common properties, but we can add another to the historical process.  
+
+    vim conf/druid/single-server/nano-quickstart/historical/runtime.properties
+    
+    druid.monitoring.monitors=["org.apache.druid.java.util.metrics.JvmMonitor","org.apache.druid.server.metrics.QueryCountStatsMonitor"]
+
+Restart the server, and you will see that we have new metrics being logged including query/count which is captured from the new monitor.
+
+    historical.log:2021-03-22T11:45:18,128 INFO [MonitorScheduler-0] org.apache.druid.java.util.emitter.core.LoggingEmitter - {"feed":"metrics","timestamp":"2021-03-22T11:45:18.128Z","service":"druid/historical","host":"localhost:8083","version":"0.20.1","metric":"query/count","value":0}
+
+## Connecting HTTP Emits to Kafka
+
+Next up, we can emit our metrics into Kafka to break free of the Druid log files.  
+
+The first thing we need to do is to pull down a Druid extension which allows us to do this which is not distributed with the Druid binary.  
+
+    java -classpath "/Users/benjaminwootton/development/_tools/apache-druid-0.20.1/lib/*" org.apache.druid.cli.Main tools pull-deps --clean -c org.apache.druid.extensions.contrib:kafka-emitter:0.20.1
+
+Next, we can edit the common.runtime.properties to load the extension: 
+
+    druid.extensions.loadList=[ "druid-kafka-indexing-service", "kafka-emitter"]
+
+Finally, we can set some parameters in the common properties file, or indeed one of the individual processes, to point towards our Kafka broker.   
+
+    druid.emitter.kafka.bootstrap.servers=localhost:9092
+    druid.emitter.kafka.metric.topic=druid-metric 
+    druid.emitter.kafka.alert.topic=druid-alert 
+    druid.emitter.kafka.producer.config={"max.block.ms":10000}
+
+When you restart Druid, you should then see metrics published to your Kafka broker on the configured topic.  
+
+To check this and analyse the data, you could of course re-ingest these metrics back into Druid:
+![](/content/images/wordpress/2021/03/Screenshot-2021-03-22-at-13.45.08-1024x552.png)
+
+## Conclusion
+
+This article demonstrated key concept such as metrics, monitors and how these are configured within Druid.  We also demonstrated how we can emit these metrics through Kafka where they can then be processed by a monitoring tool or indeed within an OLAP database such as Druid.  

@@ -1,0 +1,73 @@
+---
+title: From Titanic Releases To 10,000 Speedboats With Continuous Delivery
+slug: from-titanic-releases-to-10-000-speedboats-with-continuous-delivery
+date_published: 2021-09-03T14:08:52.000Z
+date_updated: 2021-09-03T14:15:46.000Z
+order: 114
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+Does your software release process look anything like this....
+
+- Releases are big events marked months ahead on the calendar;
+- A lot of planning goes into each one, with negotiation and sometimes ‘pulling rank’ in order to decide what features go in;
+- The code is in a broken state through the cycle and not approaching release-ready until a few weeks before the date of reckoning;
+- Huge amounts of release testing occur prior to a release, testing both the new code and lots of old code that hasn’t changed in years;
+- A big team is brought together out of hours to deploy and test the new system;
+- The system is bought down for a long maintenance window;
+- The deployment is carried out by following a long manual run-book;
+- Everyone is nervous and managers are on call at the end of the phone in case anyone goes wrong;
+- As the release takes place, people start getting nervous about progress as there is always half an eye on needing to roll-back the release;
+- The system is opened up and everyone holds their breath as the first users log back in;
+- There are 2 weeks after the releases where we have a collective sigh of relief and nobody does any real work whilst we try to forget the whole thing.
+
+Of course, this was the happy path.  If something goes wrong, all hell breaks lose with escalations, 3am wake-up calls, untested roll-backs and patches etc.  There has to be a better way, but somehow we never manage to break out of this cycle.
+
+## The Release Anti-Pattern
+
+Releases are obviously a normal part of delivering software, the simple movement of code from test into production, the final step on it’s journey into the hands of users.
+
+The problem is that teams become very release centric in their approach, with each release bringing the kind of overhead described above that adds little business value in comparison with the change that is buried within the release.
+
+This then becomes self-reenforcing.  Because releases are big and painful affairs filled with overhead and risk, the tendency is to do them less often, making them bigger and even more riskier!
+
+At a time when everyone needs to go faster and deliver software with more agility, we have to break this cycle and somehow release change more often and with less risk.
+
+The answer is to move to Continuous Delivery and deliver much smaller batches of change, much more frequently.
+
+## The Titanic Model
+
+The software release described above is like the Titanic.  A huge vessel containing large volumes of change.
+
+Because it’s expensive to send the Titanic across the ocean, simple economics mean we need to load it up with large volumes in order to make the journey worthwhile.  Just as we wouldn’t send the Titanic across the ocean containing one passenger, we wouldn’t typically start a major software release for each feature we develop.
+
+Because of this, the Titanic is not sent across the ocean very often as we wait for a reasonable sized volume of change.  We might have to wait for a long while for the next voyage, particularly f you’ve just missed a boat.  You would also have to wait for months before you an incorporate any feedback on the load that you have sent across the ocean.
+
+Because of the relative rarity of voyages, we can be really careful that on each occasion, the boats journey has been thoroughly planned and the vessel itself has been well tested and maintained, trying to cover every corner case of what could possibly go wrong.  This is fine, but it becomes a problem if we want to deliver quickly.  That rigorous, careful approach where we test the entire vessel for known defects each time starts to slow us down.
+
+The thing with the Titanic is also that all of the eggs are in one basket.  A successful voyage is an all or nothing affair.  If the release hits an Iceberg then we are in trouble because the whole thing has failed and the whole platform is at risk.  All of the change we hoped to deliver is delayed or lost and the consequences are generally quite serious.
+
+## 10,000 Speedboats
+
+Continuous Delivery is about replacing those Titanic releases with 10,000 speedboats to ship our change across the ocean into production.
+
+This strategy gets the same amount of change across the ocean, perhaps even in the same calendar time, but in 10,000 small batches instead of 1 big one.
+
+The 10,000 speedboats model allows us to start delivering business value much earlier.  As soon as the first piece of valuable functionality is ready, a speedboat can be dispatched across the ocean.  The customers on the other side can start enjoying the benefits as soon as the first speedboats start to land.  Sure, each boat contains less than a Titanic would, but people would generally rather have a bit of value today than wait for everything in 3 months.
+
+The risk of software change is diversified under this model.  If we lose one or two speedboats on the way to abandoned releases, the others should still arrive safely.  Because each speedboat is smaller and more isolated, the consequences of losing a speedboat are less serious than losing a whole titanic
+
+The speedboat model is also much more agile.  Perhaps we are getting word that our users on the other side don’t like what we are sending so we can send something slightly different on the speed-boats that set off mid-way through the cycle if we use the data coming back effectively.  This in flight change of direction is not possible with a huge Titanic that is sent across the ocean occasionally.
+
+When we send 1 Titanic across the ocean, it’s quite a big and scary event.  When we are sending 10,000 speedboats across the ocean, it will eventually become a boring non event due to the frequency of this well tested process.
+
+## Continuous Delivery
+
+This was a little analogy, but the big picture is that these big, monolithic release centric ways are killing organisations ability to deliver rapidly and innovate with software.
+
+As every company becomes a technology company, they will succeed or based in the market based on being able to quickly bring new features to market, to test ideas, and to rapidly incorporate users feedback into the next iteration.
+
+Getting to Continuous Delivery isn’t easy.  Technology platforms have to be modernised and broken up to allow for MicroServices that can be independently developed, tested and deployed.  Business processes and ways of working have to change to incorporate this style of working.  Sometimes, the business has to make a huge investment in test and deployment automation to get to this level of performance.
+
+Getting to 10,000 speedboats from an infrequently released monolith requires significant effort, but organisations such as Netflix and Amazon who have cracked the 10,000 speedboats model will be able to deliver software so much better than their competitors that it’s a transformation that mainstream development teams will simply have to make.  In todays fast moving world filled with fickle consumers, 3 monthly release cycles filled with risk and overhead just do not cut it.

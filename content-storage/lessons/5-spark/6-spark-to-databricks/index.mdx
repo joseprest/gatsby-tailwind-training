@@ -1,0 +1,52 @@
+---
+tocTitle: TBC
+title: From Spark To Databricks
+slug: from-spark-databricks
+order: 6
+category:
+  - spark
+custom_excerpt: In this lesson we will learn about the differences between Spark and Databricks, and the advantages of moving from Spark to Databricks.
+---
+
+## Lesson Overview
+
+In this lesson we will learn about the Spark query plan and how to interpret it.
+
+## Introduction
+
+Spark is the leading open source platform for processing and working with big data.  
+Because Spark is relatively complex to deploy and consume, the founders of the project launched [Databricks](http://www.databricks.com), an opinionated, cloud hosted and managed Spark solution which can be consumed through a Software As A Service (SaaS) model.
+
+Databricks can massively accelerate the time to adopting Spark, avoiding the need to build and manage all of the infrastructure and the cluster yourself.  Crucially, it also provides the web based UI on top of Spark so that you can concentrate on working with the data immediately
+
+Databricks has been adopted extremely quickly by industry, and has a well deserved [unicorn valuation](https://databricks.com/company/newsroom/press-releases/databricks-raises-1-billion-series-g-investment-at-28-billion-valuation) as a result.
+
+## Unified Workflows For Data Professionals
+
+Most businesses will have many types of Data roles within their business, including Data Analysts, Data Scientists and Data Engineers.  Databricks aims to bring the work of all of the data professionals into one collaborative platform.  For instance:
+
+- Data Engineers can use Databricks to host their ETL and build data lakes or data warehouses for their business;
+- Data Analysts can use Databricks for 'slice and dice' type analytics and business intelligence reporting;
+- Data Scientists can use Databricks for their analytics, model building and model deployment.
+
+Furthermore, because of the way that Spark and Databricks are designed, these people are given considerable flexibility to use the languages and tools that they prefer.  Often, Data Engineers prefer to use Scala for their transformations, Data Analysts prefer to use SQL, and Data Scientists prefer to use Python.  All of these are accommodated within the platform.
+
+To bring all of these people onto the same platform, whilst allowing them to use the tools they are comfortable with is really a remarkable achievement, avoiding considerable investment in building and maintaining technology for.
+
+## Notebook Based Interface
+
+From a user interface perspective, Databricks is based around the Notebook format.
+
+Notebooks are an interactive programming environment, usually hosted in the browser, where we iteratively execute code and see the results in steps.  In the example below, we have a code block in cell 1, and immediately see the results.
+
+Notebooks are a great fit and widely deployed in the data domain, because they help to explain step by step what is happening.  Without the Notebook format, code would be a black box and would be harder to debug and collaborate on.
+
+## On Demand Computing
+
+Typically, a Spark user would set up a relatively static cluster in their data centre or in the cloud.  Without considerable automation on top, this would not scale up and down in response to changing user demand throughout the day.  It is also likely that the servers would be shared across the whole organisation or group.
+
+By adding Databricks to Spark, we get a much more dynamic compute environment.  The user can request a cluster of e.g. between 1 and 5 nodes, which can be provisioned for just the time needed for the job to execute.  The customer is then billed for Databricks and for the underlying compute capacity on a per second basis.  If individual groups or users want to create their own pool of servers, they can do so subject to having the necessary permissions.
+
+### To Conclude
+
+Databricks offers a combination of a highly collaborative environment online through an accessible Notebook based interface, management of the compute within AWS/Azure/GCP, and of course removing all of the overhead of installing and managing Spark.  In return for a simple consumption-based pricing model, this is a very compelling proposition for data teams.

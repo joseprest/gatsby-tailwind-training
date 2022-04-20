@@ -1,0 +1,84 @@
+---
+tocTitle: TBC
+title: Kafka Consumer Groups
+slug: kafka-consumer-groups
+custom_excerpt: In this lesson we will learn about Kafka Consumer Groups, including how to configure them and some of the relevant parameters.  
+order: 6
+category:
+    - kafka
+premium_content: true
+---
+
+## Lesson Overview
+
+In this lesson we will learn about Kafka Consumer Groups, including how to configure them and some of the relevant parameters.  
+
+## About Consumer Groups
+
+Kafka messages are produced by _producers_ and consumed by _consumers_.
+
+In many instances, it makes sense to group our consumers into logical groupings.  For instance, we might have a group of consumers which are together responsible for consuming price updates.  
+
+- If a member of group A consumes the message, other members may not 
+- If a member of 
+
+So consumer groups are a logical grouping.  
+
+Another group of consumer 
+
+## kafka-consumer-groups.sh 
+
+The Kafka Consumer groups script allows us to view information about the consumer groups that are currently interacting with the broker instance.  
+
+```
+./bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092
+```
+
+Outputs:
+
+```
+```
+
+We can see here that there is one 
+
+Let's use the kafka-console-consumer.sh script to subscribe but using a consumer group.  
+
+```
+./bin/kafka-console-consumer.sh --group-name pizzq_prorcessor
+```
+
+## Consumer Groups And Partitions
+
+A consumer group is a collection of consumers organised into a logical group.  
+
+Consumer groups have a tight relationship with the number of partitions from a correctness and performance perspective.  
+
+Imagine we have a topic with 10 partitions:
+
+- If we have 10 consumers in a group we are balanced, with each consumer servicing a different partition.  
+- If we have more than 10 consumers in a group, some will sit idle.  
+- If we have less than 10 consumers in a group, some consumers will process from more than one partition. 
+
+We don't necessarily need to be "balanced".  This depends on the nature of the data and the requirements for failover and performance. 
+
+
+
+
+
+
+## Consumer Groups
+
+In many instances, it makes sense to group our consumers into logical groupings.  For instance, we might have a group of consumers which are together responsible for consuming order updates.  They need to co-ordinate in the folowing ways:
+
+- Work should be evenly split across the group of consumers
+- If a member of the group consumes the message, other members should not process the message
+- If a member of the group crashes, other members of the group should step in and process the messages
+
+Consumer groups allow us to achieve this behaviour.  
+
+
+## Summary
+
+In this lesson we took a deeper look into the consumer groups concept to see how they are used to improve reliability and throughput of your Kafka message processing.
+
+In the next lesson we move on to look at the process for producing data and publishing it into Kafka topics.  

@@ -1,0 +1,72 @@
+---
+title: How DBT Helps Data Engineers Work Like Software Engineers
+slug: how-dbt-enables-a-software
+date_published: 2021-09-06T13:22:27.000Z
+date_updated: 2021-09-06T13:22:27.000Z
+excerpt: How DBT improves practices for data engineers
+order: 200
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+In a [previous article](/blog/how-dbt-devops-enables-data-teams-devops/), we introduced [DBT](https://www.getdbt.com/), an open source tool that data engineers can use to transform data directly within their warehouses.
+
+One of the cited benefits of DBT is how it enables the modern practices of Software Developers to be applied to Data Engineering.  But what exactly does this mean, and how does it benefit the data team and wider organisation?
+
+In this article, we wanted to provide more colour on these specific practices and how they translate to the DBT world.
+
+### Transformations As Code
+
+Many ETL tools that are used by data teams are GUI based.  The ETL code is implemented within the tool, often by clicking and dragging connections between database tables.
+
+DBT breaks out of these proprietary GUIs and turns these transformations into readable source code using a simple "domain specific language".  This code can then be edited in any text editor or IDE in the same way a software developer can openly choose how to develop their Java or Javascript code.
+
+Breaking outside of a proprietary tool into human readable source code is great for openness and collaboration, and underlies many of the benefits we discuss below.
+
+## Source Control
+
+Once we have our transformations and other code implemented as code, they can then be placed into a source control system such as Git in the same way that developers manage their application code.
+
+By doing this, we then get a record and audit trail of who changed what and when within the transformation logic.  If a bug is introduced, we can revert to previous versions simply by pulling the code from source control.
+
+Source control also allows data engineers to use practices such as branching and merging to make the development process more efficient and allow data engineers to work in parallel in a scalable way.
+
+## Modularity
+
+Traditional ETL scripts are known for being fragile and hard to maintain.  They can often be full of interconnections and require knowledge about dependencies such as the order in which scripts should be run.  It is also common to find duplicated code, meaning that if business requirements change, we often need to make changes in multiple locations which is very error prone.
+
+DBT is designed with a much more modular structure than earlier tools, whereby we define a transformation once, then refer to transformations with *references *that keep everything nicely encapsulated in a step by step pipeline that avoids repetition.
+
+DBT also gives us features such as macros and test suites, which sit outside of the core transformation code and allow for additional reuse.
+
+## Versioning
+
+Developers will often version their code and use version numbers.  At all times, they will know which version of their code is running in which environment, and which specific changes an upgrade would bring, usually by consulting release notes.
+
+This type of traceability is often present in application code, but is greatly lacking in traditional ETL environments where environments fall out of line and lose visibility of which changes are being deployed.
+
+## Automated Testing
+
+Developers and automated testers often implement automated unit and integration testing to improve the quality of their code earlier in the development lifecycle.
+
+DBT allows developers to also test their transformations by running automated checks against the derived data.  For instance, we can check the number of rows are as expected, that no NULLs are present, and that numbers are within expected ranges.  By doing this immediately after the transformation runs, we can ensure that bugs are caught before they move to production.
+
+## Continuous Integration & Continuous Delivery
+
+Developers usually implement automatic processes to build, test and deploy their software without manual steps.  High performing teams are even moving towards continuous delivery, where changes are pushed very frequently without compromising the stability of their application.
+
+DBT scripts can be integrated into this process, giving data engineers very fast feedback and getting their work into the hands of their users very quickly when automated testing steps are passed.
+
+## Documentation
+
+Experienced Software Engineers know that the ability to change and maintain code is critical.  They will support this process by aiming for well abstracted, organised code.  Again, these are practices with have not always been present in the ETL world.
+
+DBT moves this forward by including a number of features to make the models self-documenting and include documentation inline alongside models.
+
+## Why Does This Matter?
+
+Ultimately, adopting these practices is about building more reliable, predictable, high-quality data transformation pipelines.  This enables our business users and builds confidence in the data that we are putting into their hands.
+
+Furthermore, these practices also improve the experience and productivity of the data teams.  Instead of firefighting and battling quality issues, their role becomes more like "engineering", moving forward with quality and confidence.  They will also enjoy more open collaboration with peers and avoid becoming a bottleneck to their organisations data ambitions.

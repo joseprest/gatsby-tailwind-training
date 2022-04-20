@@ -1,0 +1,27 @@
+---
+title: Moving From Batch To Streaming Extract, Transform and Load
+slug: moving-from-batch-to-streaming-extract-transform-and-load
+date_published: 2021-02-21T10:00:10.000Z
+date_updated: 2021-09-03T14:17:56.000Z
+order: 121
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+There are many situations in Enterprise IT where we need to move, copy or integrate datasets.  For example, populating a centralised data warehouse or data lake, integrating two systems such as an ecommerce and CRM system, or exchanging data between partner organisations perhaps by a simple file transfer.   
+
+Moving data around in this manner is referred to as Extract, Transform and Load or ETL.  This describes the end to end process of extracting data from the source system, transforming it for the required format, and inserting or updating data in the destination. 
+
+ETL is a very mature practice, and indeed many tools, frameworks and best practices exist for ETL.  Data engineers have been kept busy for years moving this data around, writing the scripts, managing the associated ETL tools and dealing with data errors as they arise. 
+
+Historically, this data has been exchanged as batches, for instance as a set of files which are uploaded, every hour or every day, with all of the records which have been updated in the last window.  This simple approach has served us well and will continue to serve us well for many use cases.  However, there are a number of downsides to batch based data integration:
+
+- It’s slow – meaning the destination could be waiting for hours or even days to receive the most recent data;
+- It’s fragile – there could be an error processing the record and it’s difficult to inform the source unless this is explicitly designed into the system;
+- It limits the customer experience – if we have a synchronous or low latency integration, we can inform the user immediately when the action has taken place.  With delayed batch, this isn’t possible. 
+
+Because of the increased need for speed, attention has turned to streaming Extract Transform and Load, where we perform the ETL process as it is captured in the source system and push it straight to the destination for immediate processing.  These events are typically sent over a message broker or streaming platform such as Kafka, or perhaps through a direct API call. 
+
+The main benefit of this change is it’s impact on customer experience.  For instance, if a transaction is placed and then the customer immediately calls the call centre to amend the order, the call centre agent will see the current state of the world and give the customer the best possible service.  This avoids the situation where the customer needs to call back tomorrow, or where there change should be reflected on the system in the next 30 minutes. 
+
+ETL isn't as exciting as some of the innovaitons in the data world which are happeing right now.  However, it is the true backbone underlying technology and one of the fastest routes to customer value is simply using streaming ETL to integrate data between systems and locations in real time.    

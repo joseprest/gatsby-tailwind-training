@@ -1,0 +1,35 @@
+---
+title: What Is The Data Lakehouse Pattern?
+slug: what-is-the-data-lakehouse-pattern
+date_published: 2021-09-03T14:10:41.000Z
+date_updated: 2021-10-19T10:47:28.000Z
+excerpt: Introduction to the Data Lakehouse pattern
+order: 21
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+## Introduction
+
+For more than 30 years, Data Warehouses have been a central part of the business intelligence landscape. This pattern typically involved bringing structured data together from across the business into a centralised location for business intelligence reporting and analysis. For instance, banks often implemented large data warehouses to combine details from their marketing systems, accounting systems, and mortgage systems to build a single view of the customer. Data Warehouses were often SQL based and built on proprietary technology such as Oracle or SQL Server.
+
+More recently, around 2010, the idea of the Data Lake emerged. Whereas Data Warehouses typically structure and organise their data into a set relational schema as it is ingested, the Data Lake pattern involves storing data which is unstructured or semi structured and leaving decisions about _how_ the data will be processed and analysed until later when it is consumed. Data Lakes are also a better fit for data such as images, log files or other binary files and not just relational data. Finally, instead of being stored within a relational database as per the Warehouse, Lakes are typically stored on low cost Object Storage such as AWS S3 where the data is more open.
+
+This evolution in approach has led to a situation where organisations have both Data Warehouses and Data Lakes within their organisation, and indeed multiple instances of each. Sometimes, the Lake is simply the more modern, strategic and widely used solution, whereas the Warehouse is legacy. In other instances, the two are integrated so that data is exchanged between the two, for instance by surfacing Lake data to Data Analysts through a relational Warehouse.
+
+Recently, there has been considerable interest in combining the concepts into what is referred to a single Data Lakehouse. This involves taking the best of the Data Warehouse and Data Lake and delivering them together with one technology solution and one copy of the data. This is a fairly significant technology ask, but if it can be delivered, it has significant benefits:
+
+- Only one technology platform needs to be deployed and managed, reducing cost, overhead and improving time to value;
+- This shared data source can be used by Data Analysts and Data Scientists who can adopt common tooling and patterns;
+- All data can be stored in the more modern lake structure, avoiding much of the painful ETL development, whilst also giving data analysts the organised and structured interface they need;
+
+In practice, the Data Lakehouse pattern can be thought of as providing a layer over the top of the unstructured Lake, which makes it look like more a Data Warehouse. For instance, by adding the following capabilities over a Data Lake:
+
+- Introducing the concept of relational tables over the unstructured data files;
+- Exposing a SQL layer and query engine for querying and updating this data;
+- Implementing database mechanisms such as constraints on top of the data;
+- Implementing ACID transactions over the data lake.
+
+Again, Databricks have the lead in developing this capability of integrating the Data Warehouse and Data Lake, but they are by no means the only vendor on this journey. Snowflake for instance is moving away from marketing itself as a Data Warehouse to becoming more of a Data Platform, whilst the Azure Synapse Analytics is also bringing this to life in an Azure native solution.
+
+Data Lakehouse can sound like a marketing buzzword, but there is real substance behind it and I believe it is likely to be one of the big transformation stories for data strategy in the enterprise going forward.

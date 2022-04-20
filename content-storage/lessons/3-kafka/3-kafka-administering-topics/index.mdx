@@ -1,0 +1,122 @@
+---
+tocTitle: TBC
+title: Administering Kafka Topics
+slug: kafka-topics
+order: 3
+custom_excerpt: In this lesson we will learn about Kafka Topics, including what they are and how to configure and optimise them.  
+category:
+    - kafka
+---
+
+## Lesson Overview
+
+In this lesson we will learn about Kafka Topics, including what they are and how to configure and optimise them.  
+
+## About Topics
+ 
+Topics are one of the core concepts of Kafka. 
+
+Kafka is responsible for taking messages from producers, and delivering them to consumers in a reliable and performant manner.  
+
+Messages that flow through Kafka are organised, published to, and consumed from topics.  For instance, an eCommerce business might create seperate topics for their orders, their website visits, their price updates and so forth.
+
+Topics have a name but do not have a type.  An orders topic could theoretically contain events about website visits or price updates, though this would of course be confusing.  
+
+## Creating Topics
+
+Out of the box, Kafka Topics can be created automatically the first time a consumer sends a message.  For instance, if we send events to topics X, Y and Z the three topics would be automatically created with default settings.  
+
+This behaviour can be turned off with the parameter _auto.create.topics.enable_ within the _server.properties_ file that we specify on broker start if you wish to explicitly control the allowed topics.
+
+## Manually Creating A Topic
+
+Instead of allowing consumers and producers to create topics dynamically, the _kafka-topics.sh_ script can be used to explicitly create a topic from the command line tools.  
+
+When creating a topic, we have to specify the number of partitions and the replication factor.  These will be explained in more detail later, so simply specify 1 for now:
+
+```
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic new_pizza_orders --create --partitions 1 --replication-factor 1
+```
+
+## Listing Topics
+
+We can now list the topics on the Kafka broker like so:
+
+```
+./bin/kafka-topics.sh --bootstrap-server --list
+```
+
+There should only be one topic created at this stage,  the one we created above:
+
+```
+new_pizza_orders
+```
+
+## Describing A Topic
+
+It is possible to describe a topic to get more details about it.  Let's describe the topic which we have just created.
+
+```
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic new_pizza_orders  --describe
+```
+
+Outputs:
+
+```
+Topic: new_pizza_orders TopicId: eKmjEej3QkiMgAMLKwQ2pA PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+        Topic: new_pizza_orders Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+```
+
+This output shows that there is 1 partition and a replica count of 1 as requested, together with other information such as the lead broker.  Because we only have one broker, this will show broker ID zero as the owner.   
+
+## Topic Deletion 
+
+It is also possible to use the _kafka-topics.sh_ script to explicitly remove topics if they are no longer needed. 
+
+```
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic new_pizza_orders  --delete
+```
+
+## Topic Structure
+
+Topics contain ordered lists of messages, describing what happened over time.  
+
+Messages published to topics are immutable, meaning that the messages cannot be updated or deleted by the consumers or producers after they have been written.  
+
+In the following sequence, we have sent three messages in JSON format to a topic which can never be alterered after the fact.  New messages are apended to the log with increasing offsets.  
+
+```
+Offset 0 - { "ordernumber" : 1, "order_category" : "Electronics" }
+Offset 1 - { "ordernumber" : 2, "order_category" : "Electronics" }
+Offset 2 - { "ordernumber" : 3, "order_category" : "Electronics" }
+```
+
+## Retention 
+
+By default, Kafka will retain messages for a period of 7 days, which may or may not be appropriate for your needs.  Typically, we would like to keep data around until we can be sure that it is fully processed by consumers.
+
+The default setting is configured in the _server.properties_ file which will be used for all topics where a retention period is not specifically specified:
+
+```
+grep retention ./config/server.properties 
+```
+
+Outputs:
+
+```
+log.retention.hours=168
+```
+
+When we create topics, we can override this default value by specifying either a retention period in milliseconds, seconds or hours, or a maximum amount of data to retain.  Here we are creating 3 topics with a retention time of 180000 milliseconds, or XX days. 
+
+```
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic new_pizza_orders --create --partitions 1 --replication-factor 1 --retention.ms=180000
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic new_pizza_ingredients --create --partitions 1 --replication-factor 1 --retention.ms=180000
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic new_pizza_events --create --partitions 1 --replication-factor 1 --retention.ms=180000
+```
+
+## Summary
+
+In this lesson, we created, deleted and altered Kafka topics,  setting parameters such as the number of partitions and replication factors.  We also looked at how to configure retention timeouts on Kafka topics to control when data is discareded.
+
+In the next lesson, we will look more deeply into the concept of partitions, which are an important mechanism for increasing scalability of your Kafka clusters.

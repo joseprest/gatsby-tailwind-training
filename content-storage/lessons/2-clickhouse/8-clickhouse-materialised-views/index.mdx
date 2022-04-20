@@ -1,0 +1,50 @@
+---
+tocTitle: TBC
+title: Materialised Views
+slug: clickhouse-materialised-views
+custom_excerpt: In this lesson we will introduce materialised views, and demonstrate how they are more powerful than materialsied views as implemented by other databases.
+order: 8
+category:
+    - clickhouse
+---
+
+## Lesson Overview
+
+In this lesson we will introduce materialised views, and demonstrate how they are more powerful than materialsied views as implemented by other databases.
+
+## What Is A View?
+
+A view is a convenience function for.   
+
+```
+create table pizza_orders ( order_id integer, customer_id integer, value float );
+create view high_value_orders as select * from pizza_orders where value > 90.00
+```
+
+A view does not store any data, but instead queries the underlying table each time the view is accessed.  This means they do not necessarily give any performance speed up. 
+
+## What Is A Materialised View?
+
+Unlike a view, a materialised view actually saves the results of the query on disk.
+
+```
+update x
+```
+
+The upside of this is that the materialised views are faster to query, because the query is already pre-calculated.  However, there are two downsides. 
+
+Firstly, they take more storage because the results.  This could imply duplication such as in the example below where the high value orders will be stored in both the original table and the materialised view.  
+
+Secondly, manaing the materialised views will add delays when we insert and update data, and require database resources.
+
+## Materialised Views and Table Engines
+
+The behaviour of our Materialised View can be combined with table engines to acheive. 
+
+For instance, we could use a SummingMergeTree, or a ReplacingMergreeTree to
+
+## Summary
+
+In this lesson we looked closely at Materialised Views in Clickhouse, and described the benefits and costs in using them.  
+
+We also considered briefly how materialised views can be combined with various table engines to achieve the desired semantics that we need.  

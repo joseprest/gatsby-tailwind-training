@@ -1,0 +1,55 @@
+---
+title: What Is Dash, And How Can It Benefit Your Business?
+slug: what-is-dash-and-how-can-it-benefit-your-business
+date_published: 2020-07-21T11:04:31.000Z
+date_updated: 2021-10-19T10:52:31.000Z
+order: 139
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+As we know, many companies are looking to use their data more effectively in order to improve efficiency and customer experience.
+
+To achieve this, most business intelligence programmes are involved with building data warehouses and data lakes, and giving dashboards and reports to executives who will review the information at a strategic level.
+
+We believe that we need to go further to achieve the vision of a data driven organisation, and get information and insights directly into the hands of your “on the ground” employees where it can be used to drive their day to day jobs and “next best action”.
+
+Though we can reach for something like email alerts, or even dashboard tooling such as Tableau to distribute information across your organisation, sometimes we need to go further and provide more interactive and richer experiences, where people can search, slice and dice, analyse and really interact with their data.
+
+In these situations, [**Dash by Plotly**](https://plotly.com/dash/) is a great tactical option.  It allows you to quickly build data science oriented applications that display reports, charts and other visualisations in order to expose data analytics and data science outputs into the hands of your users.  Examples of the types of applications that can be built are included below:
+![](/content/images/wordpress/2020/07/Screenshot-2020-07-21-at-11.12.28-1024x572.png)![](/content/images/wordpress/2020/07/Screenshot-2020-07-21-at-11.12.21-1024x546.png)
+Dash applications are built with Python, a language of course common with data scientists, but also have a rapid application development feel whereby we specify what the layout of the application needs to be declaratively.
+
+    app.layout = html.Div(children=[
+        html.H1(children='Hello Dash'),
+    
+        html.Div(children='''
+            Dash: A web application framework for Python.
+        '''),
+    
+        dcc.Graph(
+            id='example-graph',
+            figure=fig
+        )
+    ])
+
+All of the data is fed into Dash using Pandas Data Frames, which are a very standard way of interacting and processing data in Python.  For instance, here we are building a dataframe, and pushing that into a bar chart using very readable and accessible code.
+
+    df = pd.DataFrame({
+        "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
+        "Amount": [4, 1, 2, 2, 4, 5],
+        "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
+    })
+    
+    fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
+
+Of course, between the Pandas Data Frame and the visualisation, we have full potential to manipulate and use the data as we wish.  For instance, in these two articles, we demonstrated how [forecasting](https://timeflow.academy/blog/forecasting-using-data-stored-in-apache-druid) or [anomaly detection](/anomaly-detection-using-data-stored-in-apache-druid/) could be applied and exposed to end users in Plotly, then in Dash, in an interactive manner.
+
+Finally, the applications are very easy to run as a standard Python process, though Dash Enterprise can also provide a hosting environment and other features if you wish to expose to a broader user community.
+
+    $ python app.py
+    ...Running on http://127.0.0.1:8050/
+
+This all means that the average data scientist can very quickly build and deploy interactive GUIs on top of their analysis in order to furnish the business with interactive analytics in a way which goes far beyond what can be achieved with self service dashboards and reports.
+
+Where people need a very customised and rich front-end experience, it might be more appropriate to use something like [**React**](https://reactjs.org/). However, for the vast majority of line of business applications, Dash has huge potential to data enable your business and harness the value that your data scientists are producing.

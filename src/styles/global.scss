@@ -1,0 +1,230 @@
+@font-face {
+  font-family: "CircularStd";
+  src: url("/assets/fonts/CircularStd-Bold.eot");
+  src: url("/assets/fonts/CircularStd-Bold.eot?#iefix")
+      format("embedded-opentype"),
+    url("/assets/fonts/CircularStd-Bold.woff2") format("woff2"),
+    url("/assets/fonts/CircularStd-Bold.woff") format("woff"),
+    url("/assets/fonts/CircularStd-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CircularStd";
+  src: url("/assets/fonts/CircularStd-Book.eot");
+  src: url("/assets/fonts/CircularStd-Book.eot?#iefix")
+      format("embedded-opentype"),
+    url("/assets/fonts/CircularStd-Book.woff2") format("woff2"),
+    url("/assets/fonts/CircularStd-Book.woff") format("woff"),
+    url("/assets/fonts/CircularStd-Book.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CircularStd";
+  src: url("/assets/fonts/CircularStd-Medium.eot");
+  src: url("/assets/fonts/CircularStd-Medium.eot?#iefix")
+      format("embedded-opentype"),
+    url("/assets/fonts/CircularStd-Medium.woff2") format("woff2"),
+    url("/assets/fonts/CircularStd-Medium.woff") format("woff"),
+    url("/assets/fonts/CircularStd-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+}
+
+body {
+  font-family: "CircularStd";
+}
+
+.pink-gradient {
+  background: linear-gradient(90deg, #c569cf 0%, #ee609c 100%);
+}
+
+.slick-slider {
+  .slick-arrow {
+    position: absolute;
+    right: 1rem;
+    top: -40px;
+    left: auto;
+    height: 48px;
+    width: 48px;
+    &::before {
+      content: "";
+    }
+    &.slick-prev {
+      left: auto;
+      right: 70px;
+      background: url(/assets/img/arrow-left.png);
+    }
+    &.slick-next {
+      background: url(/assets/img/arrow-right.png);
+    }
+  }
+}
+.cover-slider {
+  .slick-slider {
+    .slick-arrow {
+      top: 50%;
+      transform: translateY(-50%);
+      &.slick-prev {
+        background: url(/assets/img/arrow-left-white.png);
+        left: 70px;
+        z-index: 1;
+      }
+      &.slick-next {
+        right: 70px;
+        background: url(/assets/img/arrow-right-white.png);
+      }
+    }
+  }
+}
+
+.category-cover {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.home-cover {
+  background-image: url(/assets/img/home.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.premium-content {
+  background: linear-gradient(114.82deg, #fc887b 15.81%, #ffdd95 84.19%);
+}
+
+.contact-form {
+  input,
+  select,
+  textarea {
+    box-shadow: 0px 30px 60px rgba(0, 0, 0, 0.05);
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}
+
+.btn-loading {
+  &::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    right: 10px;
+    top: calc(50% - 9px);
+    border-radius: 50px;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    -webkit-animation: spinner 0.7s linear infinite;
+    animation: spinner 0.7s linear infinite;
+  }
+}
+
+@-webkit-keyframes spinner {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes spinner {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.bar-icon {
+  background: linear-gradient(263.97deg, #803c8a 16.56%, #ffcdce 274.83%);
+}
+
+[aria-current="page"],
+[aria-current="page"].profile-menu {
+  @apply text-orange;
+}
+[aria-current="page"].profile-menu:hover {
+  @apply text-white;
+}
+
+.menu-bar {
+  span {
+    margin: 3px 0;
+  }
+}
+
+.close-icon svg line {
+  stroke: #803c8a;
+}
+
+.protected-content {
+  max-height: 1500px;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.8) 47%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}
+
+.z-99999 {
+  z-index: 99999;
+}
+
+.body-loaded {
+  .preloader-card {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+.prose {
+  table {
+    @apply border-b border-t border-l;
+    tr {
+      td {
+        @apply border-r px-2;
+      }
+    }
+    thead {
+      @apply bg-grey-800 bg-opacity-20;
+      tr {
+        th {
+          @apply p-2 border-r;
+          &:first-child {
+            @apply pl-2;
+          }
+        }
+        td {
+          @apply p-2;
+        }
+      }
+    }
+    tbody {
+      td {
+        &:first-child {
+          @apply pl-2;
+        }
+      }
+    }
+  }
+}

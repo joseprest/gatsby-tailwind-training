@@ -1,0 +1,169 @@
+---
+tocTitle: TBC
+title: Setting Up Your Kafka Broker
+slug: kafka-setting-broker
+order: 2
+custom_excerpt: In this lesson we will setup our Kafka broker in standalone mode.
+category:
+  - kafka
+---
+
+## Lesson Overview
+
+In this lesson we will setup our Kafka broker, initially in standalone non-clustered mode.
+
+## Downloading Kafka
+
+As Kafka is free and open source, we can download it freely from the web at <a href="https://kafka.apache.org/">kafka.apache.org</a>. 
+
+However, our [training virtual machine](/running-training-environment) already has Kafka downloaded and ready to start.   You can navigate into the folder like so:
+
+```
+cd /kafka_2.13-3.0.0
+```
+
+And explore the directory structure with an:
+
+```
+ls -la
+```
+
+## Note On Kafka Distributions
+
+[Confluent](http://confluent.io) are the main commercial backers behind Kafka. As well as their hosted Confluent Cloud solution and a commercial distribution of Kafka, they also also produce a community edition of their customisations and enhancements.  Note that this can sometimes make navigating documentation and blog articles tricky as it isn't always obvious which distribution they are referring to. 
+
+For the purposes of this course, we are using the open source distribution of Kafka downloaded from  <a href="https://kafka.apache.org/">kafka.apache.org</a>.  
+
+## Starting Zookeeper
+
+Kafka has historically had a significant dependence on a second piece of software named [Apache Zookeeper](https://zookeeper.apache.org/) for it's state and cluster management.  The Kafka project has been actively working for some time on removing this dependency, but for now, Kafa still requires Zookeeper.
+
+Therefore, before bringing up our Kafka cluster, we need to begin by starting Zookeeper.  This is distributed with the Kafka download and started from the _bin_ folder, using the default _zookeeper.properties_ file which is also distributed with Kafka.
+
+As we will be creating multiple processes, be sure to start _tmux_ as described on the [training virtual machine page](/running-training-environment).  Then within one shell, execute the following command to start Zookeeper:
+
+```
+./bin/zookeeper-server-start.sh ./config/zookeeper.properties
+```
+
+This should relatively quickly with no obvious errors in the logs.  
+
+## Starting The Broker
+
+With Zookeeper up and healthy, we can now move towards starting Kafka.  This requires a server.properties file, of which as with Zookeeper, the default one is fine for our purposes.
+
+Because Zookeeper is running in our first terminal, we need to open a second terminal in a tmux pane and issue the following command:
+
+```
+cd /kafka_2.13-3.0.0
+./bin/kafka-server-start.sh ./config/server.properties
+```
+
+Again, this should start quickly with no obvious errors in the logs.
+
+We now have a running Zookeeper and a running Kafka broker connected to it.  If we needed to shut down, the cleanest way to do this is to close down Kafka and then Zookeeper.  
+
+## Stopping The Broker
+
+Because we started the Zookeeper and Kafka servers in the foreground of the terminal, the process will be closed when we press CTRL+C or close our tmux pane.  However, in more realistic deployments we would start Kafka broker using some mechanism that continues to run after we logout - for instance nohup, within tmux, or as a service.
+
+In that instance, a seperate script is provided to manually stop the Zookeeper and Kafka servers:
+
+```
+./bin/zookeeper-server-stop.sh ./config/zookeeper.properties
+```
+
+```
+./bin/kafka-server-stop.sh ./config/server.properties
+```
+
+Feel free to start and stop your processes through various mechanisms, but ensure they are running again before progressing with the lesson.  
+
+## Command Line scripts
+
+The Kafka distribution that we downloaded comes with a number of scripts which are found in the ./bin folder.
+
+```
+cd /kafka_2.13-3.0.0
+ls -la bin/
+```
+
+Outputs:
+
+```
+-rwxr-xr-x   1 benjaminwootton  wheel   1423  8 Sep 22:21 connect-distributed.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1396  8 Sep 22:21 connect-mirror-maker.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1420  8 Sep 22:21 connect-standalone.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    861  8 Sep 22:21 kafka-acls.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    873  8 Sep 22:21 kafka-broker-api-versions.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    860  8 Sep 22:21 kafka-cluster.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    864  8 Sep 22:21 kafka-configs.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    945  8 Sep 22:21 kafka-console-consumer.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    944  8 Sep 22:21 kafka-console-producer.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    871  8 Sep 22:21 kafka-consumer-groups.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    948  8 Sep 22:21 kafka-consumer-perf-test.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    871  8 Sep 22:21 kafka-delegation-tokens.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    869  8 Sep 22:21 kafka-delete-records.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    866  8 Sep 22:21 kafka-dump-log.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    863  8 Sep 22:21 kafka-features.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    865  8 Sep 22:21 kafka-get-offsets.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    870  8 Sep 22:21 kafka-leader-election.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    863  8 Sep 22:21 kafka-log-dirs.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    873  8 Sep 22:21 kafka-metadata-shell.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    862  8 Sep 22:21 kafka-mirror-maker.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    959  8 Sep 22:21 kafka-producer-perf-test.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    874  8 Sep 22:21 kafka-reassign-partitions.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    874  8 Sep 22:21 kafka-replica-verification.sh
+-rwxr-xr-x   1 benjaminwootton  wheel  10587  8 Sep 22:21 kafka-run-class.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1376  8 Sep 22:21 kafka-server-start.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1361  8 Sep 22:21 kafka-server-stop.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    860  8 Sep 22:21 kafka-storage.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    945  8 Sep 22:21 kafka-streams-application-reset.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    863  8 Sep 22:21 kafka-topics.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    879  8 Sep 22:21 kafka-transactions.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    958  8 Sep 22:21 kafka-verifiable-consumer.sh
+-rwxr-xr-x   1 benjaminwootton  wheel    958  8 Sep 22:21 kafka-verifiable-producer.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1714  8 Sep 22:21 trogdor.sh
+drwxr-xr-x  30 benjaminwootton  wheel    960  8 Sep 22:21 windows
+-rwxr-xr-x   1 benjaminwootton  wheel    867  8 Sep 22:21 zookeeper-security-migration.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1393  8 Sep 22:21 zookeeper-server-start.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1366  8 Sep 22:21 zookeeper-server-stop.sh
+-rwxr-xr-x   1 benjaminwootton  wheel   1019  8 Sep 22:21 zookeeper-shell.sh
+```
+
+These administration scripts can be used for tasks such as creating topics, removing messages, publishing and consuming messages and repartitioning topics. We will cover these scripts in detail in future lessons.
+
+Note there are also scripts pertaining to Zookeeper and the embedded Kafka Connect in the same location.
+
+## Kafka State Location
+
+As Kafka is working and exchanging messages between producers and consumers, it needs to store state such as the messages waiting to be consumed. Though these will be heavily cached in memory for performance purposes, they will also need to be written to disk in case the Kafka process was to crash. By default, this data is stored in the _/tmp/kafka-logs_ directory.
+
+```
+ls -la /tmp/kafka-logs
+```
+
+Outputs:
+
+```
+drwxr-xr-x   6 benjaminwootton  wheel   192 12 Nov 13:34 __consumer_offsets-0
+drwxr-xr-x   6 benjaminwootton  wheel   192 12 Nov 13:34 __consumer_offsets-1
+-rw-r--r--   1 benjaminwootton  wheel     0 12 Nov 13:32 cleaner-offset-checkpoint
+-rw-r--r--   1 benjaminwootton  wheel     4 14 Nov 14:26 log-start-offset-checkpoint
+-rw-r--r--   1 benjaminwootton  wheel    88 12 Nov 13:32 meta.properties
+drwxr-xr-x   6 benjaminwootton  wheel   192 12 Nov 13:34 new_pizza_orders-0
+-rw-r--r--   1 benjaminwootton  wheel  1216 14 Nov 14:26 recovery-point-offset-checkpoint
+-rw-r--r--   1 benjaminwootton  wheel  1216 14 Nov 14:26 replication-offset-checkpoint
+```
+
+This is an state store which is managed internally by Kafka, so you wouldn't typically have to interact with it. However, it's important to know where it is stored for a few reasons:
+
+- Some operating systems have processes which automatically clear files from /tmp. You may wish to relocate the Kafka state file in this instance;
+- You may wish to add backups and monitoring around this file to improve stability and chance of recovery in a critical situation;
+- If you would like to start afresh with your Kafka broker, stopping the broker and removing all of the state is the easiest way to do this.
+
+## Summary
+
+In this lesson we started Zookeeper and our single node Kafka broker. We also looked at some of the administration scripts distributed with Kafka. Finally, we looked at how Kafka stores state to disk.
+
+In the next lesson, we will go through the process of administering topics which will eventually hold our messages.

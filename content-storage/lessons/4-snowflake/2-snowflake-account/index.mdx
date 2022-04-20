@@ -1,0 +1,62 @@
+---
+tocTitle: TBC
+title: Snowflake Accounts
+slug: snowflake-accounts
+order: 2
+custom_excerpt: In this lesson we will learn about the different types of Snowflake account and the choices that you need to make.
+category:
+    - snowflake
+---
+
+
+## Lesson Overview 
+
+In this lesson we will learn about the different types of Snowflake account and the choices that you need to make when  you open an account.  We will then go through the process of opening a free trial account at Snowflake.com which we can use for the remainder of this lesson.
+
+## Snowflake Account Types
+
+Snowflake has three types of account which each bring different features and support levels.  
+
+- Standard - The baseline option;
+- Enterprise - Additional features such as longer time-travel windows and materialised views;
+- Business Critical - Additional security features for highly sensitive workloads. 
+
+As we explain in a later lecture, Snowflake billing is based on a credit model, and the credit cost is dependent on the tier above.  For instance, a standard account in eu-west-1 AWS will cost $2.60 per credit, whereas an enterprise tier account would cost $3.90 per credit and a business critical would cost $5.20.  In this instance,  if you really need the features in higher tiers, your per credit cost will be 100% higher than with a standard account.    
+
+## Cloud Account
+
+Though Snowflake is a fully Software As A Service model, your Snowflake instance is hosted within cloud accounts hosted by AWS, Microsoft or Google.  Some customers will care about this for reasons such as storing their data in an approved cloud, or wanting to store it in a data centre close to their users and applications.  
+
+Once you have chosen a cloud provider, you will also need to choose a region.  Typically it will make sense to choose one closest to your applications and users in order to reduce latency, though some organisations might have data locality constriants where they have to store their data in country for legal reasons.   
+
+The choice of cloud and region also impacts the per credit cost.  For instance, a standard account hosted in AWS eu-west-1 region will cost $2.60 per credit, whereas the same standard account is us-east-1 will cost $2.00 per credit.  This will also likely be a factor in your decision where to host.  
+
+Within the region, your data will be managed securely across multiple "avaialbility zones".  For instance, Amazons eu-west-1 region has 3 availability zones or data centres.  This implementation detail isn't expoed to the Snowflake user, but it is something which will be used behind the scenes to make your Snowflake account resilient.  
+
+## Opening The Free Trial
+
+Snowflake provides a generous free trial of up to $400 of free credits.  This can be accessed by simply opening an account at [snowflake.com](https://signup.snowflake.com/) and entering credit card details.  
+
+## Logging Into Your Account
+
+Most people who use Snowflake will be accessing it through the Graphical User Interface in a web browser.
+
+There is also an option which is a Command Line Client (CLI) which we can use to access Snowflake through a terminal.  
+
+Our [training virtual machine](/running-training-environment) already includes: 
+
+```
+snowsql -e <account_id> -u <username> -p <password>
+```
+
+You can execute the _show databases_ command to test connectivity to your Snowflake account.   
+
+```
+show databases
+```
+
+## Summary
+
+In this lesson, we learnt about Snowflake accounts and some of the options with regards to hosting.  
+
+We  opened a free trial account, and then connected to it both through the GUI and the CLI.  We will use this course and access through the CLI for the remainder of this course.  

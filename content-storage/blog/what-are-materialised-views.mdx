@@ -1,0 +1,30 @@
+---
+title: What Are Materialised Views?
+slug: what-are-materialised-views
+date_updated: 2021-12-05T09:34:38.000Z
+excerpt: What Are Materialised Views
+order: 50
+image: /x.jpg
+featured_image: /x.jpg
+---
+
+
+## Materialised Views
+
+So views are simple convenience functions which still execute the same query against the same data.  But what if the query is slow  to run due to the volume of data in the underlying table or the complexity of the query.  
+
+In this instance, we can _materialise_ the view such that the results are pre-computed for when somebody queries the view.  These are called materialized views.  
+
+There are two primary costs of going down this route:
+
+- The data in the materialised view is duplicated, requiring more storage costs.  If we are aggregating millions of rows into a 5 row summary table, this isn't of particular concern, but if our materialized view contains a large subset of the underlying table data, this could become an issue;
+
+- The materialised view has to be kept up to date as the underlying data changes.  This therefore slows down inserts into the table;
+
+- Materialised views often come with limitations around the types of joins and functions which can be applied to the data due to technical limitations in how they are implemented.
+
+Despite these tradeoffs, materialised views have huge potential for improving performance by pre-computing all of your complex queries and aggregations and keeping them up to date ready to be queried.  
+
+Unfortunately, at this time DBT does not support the ability to deploy materialised views.  However, it is a feature we expect to see in the future.  
+
+

@@ -1,0 +1,40 @@
+---
+title: Why We Use Apache Druid As Our Real Time Datastore
+slug: why-we-use-apache-druid-as-our-datastore
+date: 2021-10-19T10:51:09.000Z
+date_updated: 2021-10-19T10:51:09.000Z
+order: 151
+image: /x.jpg
+featured_image: /x.jpg
+excerpt: TBC
+---
+
+[Timeflow is our low-code platform for working with real-time data](/).  To store and analyse the events we are processing, we naturally looked for a powerful OLAP database rather than build this component ourselves.  This took us on a thorough evaluation of a vast number of number of data stores and products in the open source and commercial realms.  
+
+What we found is that for every benefit we found, there was usually an equivalent tradeoff which had to be considered carefully.  There really was no free lunch.  For instance, we looked closely at some of the time series databases due to the inherent nature of time in the event processing space, but found that they didn't perform or offer the the APIs that we needed for OLAP slice and dice analytical queries.  
+
+We tried other products and database categories, but ultimately ended up frustrated with each for different reasons including the operational experience, query languages, ACID guarantees or performance characteristics with event data.   
+
+Fortunately, we then landed on Apache Druid, a data store which is known to be in use at scale at AirBNB, Netflix and for other very-big-data deployments.  We were fortunate to find a lot of success with Druid, and over time it has proven to be a fairly unique proposition which is well suited for event data:
+
+## Combining the best of data warehouse and real time
+
+In stream processing, we typically need to perform slice and dice drill down  analytics.  For instance, asking how many orders of a specific type did a specific store ship in a specific time window.  With event streaming, we really need to execute these complex multi-dimensional queries in real time in order to respond with our events.  Unlike traditional data warehouses, Druid manages to provide both the OLAP type capabilities but with time series or document database performance characteristics;
+
+## Real time ingestion:
+
+Druid has a focus on importing data in real time from sources such as Kafka, together with more traditional batch ingestion.  This is  powerful when you combine the two, giving us a view of long term history and very recent data in a consistent way.  In a lot of data environments these are treated very differently and the data is often in different stores.  Being able to do analytics over both real time and historical data opens up a lot of processing scenarios such as comparing the last N seconds with the same time period last year;
+
+## Hierarchical data tiers
+
+In Druid, it is possible to put your most frequently accessed and recent data on large vertically scaled optimised servers, put the next tier of data on cheaper commodity servers, and then put some into S3 or Hadoop for long term storage.  This optimises the cost profile, allows us to configure different infrastructure types for different data scenarios, and means we can scale horizontally across commodity hardware;
+
+## Cloud scalable and behind the firewall option
+
+A lot of the innovation in data is happening in the cloud including Redshift and BigQuery.  Druid gives us some of the latest innovation in data warehousing, but with both a "behind the firewall" and a cloud native option;
+
+## And more
+
+It’s open source and free to use the standard version.  The community and ecosystem are emerging quickly and there is some buzz evolving around the platform.   And finally, there are commercial contributions from Imply, who have recently raised a $30m funding round, for reporting, security and operational management.  
+
+All in all, we are pleased we found Druid and have had significant success so far in powering our event processing scenarios.  We plan to write more about our experiences with Druid and how to best integrate with and consume the event data which we store and process there over the coming months.  

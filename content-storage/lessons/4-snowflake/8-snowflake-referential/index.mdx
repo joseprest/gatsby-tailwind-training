@@ -1,0 +1,59 @@
+---
+tocTitle: TBC
+title: Referential Integrity In Snowflake
+slug: snowflake-referential-integrity
+order: 7
+custom_excerpt: In this lesson we will learn about referential integrity in Snowflake.
+category:
+    - snowflake
+---
+
+## Lesson Overview
+
+In this lesson we will learn about referential integrity in Snowflake.  
+
+## Introduction
+
+Referential Integrity is the mechanism by which a database helps to ensure that primary/foreign key references within data remain valid.
+
+For example, say we have an *Orders* table that contains a *Customer ID *that refers to records in some *Customer* table.  The database would ensure that the *Customer *record exists at all times whilst there are *Orders* referring to it.  If someone attempts to delete the relevant *Customer* whilst dependent orders exist, the deletion would fail because it would break referential integrity.  Likewise, if we try to insert or update an *Order *with a *Customer ID* that does not exist in the database, likewise, the DML statement would be rejected.  
+
+Referential Integrity is a key part of database design and keeping our data clean and logically consistent.  However, people are often surprised to find that Snowflake doesn't have any capability to *enforce* referential integrity.  This seems like a big gap and cause of potential issues for people coming from traditional DBA backgrounds.  
+
+Snowflake does allow you to *define* referential integrity rules for informational purposes only.  In the example below we have created a *salespeople* table, and a *salesorders* table which **references***sp_id* on the *salespeople* table:
+
+```
+create or replace table salespeople (
+  sp_id int not null unique,
+  name varchar default null,
+  region varchar,
+  constraint pk_sp_id primary key (sp_id)
+);
+
+create or replace table salesorders (
+  order_id int not null unique,
+  quantity int default null,
+  description varchar,
+  sp_id int not null unique,
+  constraint pk_order_id primary key (order_id),
+  constraint fk_sp_id foreign key (sp_id)
+  references salespeople(sp_id)
+);
+```
+
+Again, the foreign key relationship has been defined, but it will not be enforced by Snowflake it all.  It is purely informational, for humans and for external tools such as ETL and Reporting tools that make use of these relationships.  Internally, Snowflake can also make use of these relationships for query optimisation, though this does not seem to be a major consideration. 
+
+## Benefits Of This Approach
+
+There are a few reasons why Snowflake have taken the design decision to remove the enforcement of constraints: 
+
+- **OLAP** - Snowflake is an OLAP (analytical) database rather than OLTP (transactional).  Therefore, the need for referential integrity is slightly less important.  In our transactional systems, it's absolutely necessary to maintain all of the semantics of our data, but with OLAP workloads we are naturally more relaxed and may be willing for instance to accept duplicate data, or data that describes the past whilst violating today's business rules;
+- **Performance** - Referential integrity checks and constraints add significant overhead because they have to be checked on every DML statement - inserts, updates and deletes.  In a data warehouse, where we are uploading vast quantities of data, this could prove to be slow, and lead to failed batch uploads;
+- **No Indexes** - Constraints are usually implemented using Indexes under the covers.  Snowflake does not use indexes, relying instead on a Micropartition and statistics mechanism which makes lookups extremely performant.  This is however less efficient than indexes for single-row lookups which would be necessary when implementing foreign key constraints.  This makes the performance even more challenging;
+- **Parallelisation** - Remember that Snowflake can have multiple virtual warehouses, each virtual warehouse can have multiple clusters, and each cluster can have multiple cores.  If the database has to be check data constraints, it has to be aware of both historical data and transactions that may be written from other processes concurrently. This means, we would need a considerable amount of distributed locking in these update processes to ensure correct semantics.  I suspect this is the main reason for not including referential integrity constraints as it would add considerable complexity and performance overhead.  
+
+In spite of all of these valid points, I still find the explanation slightly unsatisfying. As there is no technical reason why they could not be implemented, I believe that users should be able to have their referential integrity checks enforced if they choose to accept the very real performance and compute overhead.
+
+## Summary 
+
+In this lesson we looked at Snowflake referential integrity. 

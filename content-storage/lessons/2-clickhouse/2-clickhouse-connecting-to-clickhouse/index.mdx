@@ -1,0 +1,271 @@
+---
+tocTitle: TBC
+title: Connecting To Clickhouse
+slug: connecting-to-clickhouse
+order: 2
+category:
+  - clickhouse
+custom_excerpt: In this lesson we will connect to Clickhouse, and learn about the different deployment options.
+---
+
+## Lesson Overview
+
+In this lesson we will connect to Clickhouse, and learn about the different deployment options and considerations.
+
+## Downloading Clickhouse
+
+Because Clickhouse is open source, it is free to download from the [Clickhouse website](https://clickhouse.com/).  
+
+For this lesson however, we will use our [training virtual machine](/running-training-environment) which should be downloaded and started per the instructions on that page.
+
+## Starting The Server
+
+___Note: Because we will be starting seperate client and server processes, remember to use tmux as per the instructions on the [training virtual machine](/running-training-environment) page before progressing.___
+
+The training virtual machine already has the Clickhouse binary installed, but the server has not been started.  We can begin therefore by simply running the clickhouse _server_ command to start the process, passing in the path to the default config.xml file.  
+
+```
+clickhouse-server -C /etc/clickhouse-server/config.xml
+``` 
+
+This will output a fairly lengthy set of logs, but a number of informational messages show that the server is starting cleanly:
+
+```
+2021.11.25 12:17:42.942929 [ 25 ] {} <Information> : Starting ClickHouse 21.11.4.14 with revision 54456, build id: 8332E80F7ACF6DE1033E1A6D9F16415C6E03DBF0, PID 25                                                                           2021.11.25 12:17:42.946195 [ 25 ] {} <Information> Application: starting up                                                                                                                                                       2021.11.25 12:17:42.946278 [ 25 ] {} <Information> Application: OS name: Linux, version: 5.10.47-linuxkit, architecture: x86_64
+2021.11.25 12:17:45.423613 [ 25 ] {} <Information> Application: Calculated checksum of the binary: 805E158CCA2B20788668232443B9CEE6, integrity check passed.
+2021.11.25 12:17:45.555272 [ 25 ] {} <Information> DatabaseCatalog: Found 0 partially dropped tables. Will load them and retry removal.                                                                                                       2021.11.25 12:17:45.561421 [ 25 ] {} <Information> DatabaseAtomic (default): Metadata processed, database default has 0 tables and 0 dictionaries in total.                                                                                   2021.11.25 12:17:45.561494 [ 25 ] {} <Information> TablesLoader: Parsed metadata of 0 tables in 1 databases in 0.000178457 sec
+2021.11.25 12:17:45.561503 [ 25 ] {} <Information> TablesLoader: Loading 0 tables with 0 dependency level                                                                                                                                     2021.11.25 12:17:45.561511 [ 25 ] {} <Information> DatabaseAtomic (default): Starting up tables.                                                                                                                                              2021.11.25 12:17:45.561518 [ 25 ] {} <Information> DatabaseAtomic (system): Starting up tables.
+2021.11.25 12:17:45.565785 [ 25 ] {} <Information> BackgroundSchedulePool/BgSchPool: Create BackgroundSchedulePool with 128 threads
+```
+
+
+### Clickhouse Service
+
+In this lesson, we are starting and stopping the Clickhouse server and client manually within the foreground of a terminal.  If installed as a SystemD service, the service could be stopped, started and restarted using the following commands:
+
+```
+service clickhouse-server stop
+service clickhouse-server start
+service clickhouse-server restart
+```
+
+## Starting The Client
+
+In a second tmux shell, we can then start the Clickhouse client command.  This is a command line tool which allows us to send commands to the server which we've just started:
+
+```
+clickhouse-client
+```
+
+The client assumes some defaults, such as the fact that we would like to connect to localhost, with the username _default_ and a blank password.  If we were connecting to a different secured Clickhouse machine, we can specify these details at the command line:
+
+```
+clickhouse-client -i clickhouse.timeflow.com:2131 -u benjaminwootton --password ABC123
+```
+
+In this case, the defaults are fine so the client should connect succesfully.  We can then issue a command within the Clickhouse client to check connectivity:
+
+```
+show databases
+```
+
+Outputs:
+
+```
+SHOW DATABASES
+
+Query id: a3f1db00-87af-47a8-9096-dad14df00589
+
+┌─name───────────────┐
+│ INFORMATION_SCHEMA │
+│ default            │
+│ information_schema │
+│ system             │
+└────────────────────┘
+
+4 rows in set. Elapsed: 0.004 sec.
+```
+
+This shows that there are 4 databases which are all internal to Clickhouse operations.  We can change to the system database:
+
+```
+use system
+```
+
+And show a list of tables:
+
+```
+show tables
+```
+
+Outputs:
+
+```
+┌─name───────────────────────────┐
+│ aggregate_function_combinators │
+│ asynchronous_inserts           │
+│ asynchronous_metric_log        │
+│ asynchronous_metrics           │
+│ build_options                  │
+│ clusters                       │
+│ collations                     │
+│ columns                        │
+│ contributors                   │
+│ current_roles                  │
+│ data_skipping_indices          │
+│ data_type_families             │
+│ databases                      │
+│ detached_parts                 │
+│ dictionaries                   │
+│ disks                          │
+│ distributed_ddl_queue          │
+│ distribution_queue             │
+│ enabled_roles                  │
+│ errors                         │
+│ events                         │
+│ formats                        │
+│ functions                      │
+│ grants                         │
+│ graphite_retentions            │
+│ licenses                       │
+│ macros                         │
+│ merge_tree_settings            │
+│ merges                         │
+│ metric_log                     │
+│ metrics                        │
+│ models                         │
+│ mutations                      │
+│ numbers                        │
+│ numbers_mt                     │
+│ one                            │
+│ part_moves_between_shards      │
+│ parts                          │
+│ parts_columns                  │
+│ privileges                     │
+│ processes                      │
+│ projection_parts               │
+│ projection_parts_columns       │
+│ query_log                      │
+│ query_thread_log               │
+│ quota_limits                   │
+│ quota_usage                    │
+│ quotas                         │
+│ quotas_usage                   │
+│ replicas                       │
+│ replicated_fetches             │
+│ replicated_merge_tree_settings │
+│ replication_queue              │
+│ rocksdb                        │
+│ role_grants                    │
+│ roles                          │
+│ row_policies                   │
+│ session_log                    │
+│ settings                       │
+│ settings_profile_elements      │
+│ settings_profiles              │
+│ stack_trace                    │
+│ storage_policies               │
+│ table_engines                  │
+│ table_functions                │
+│ tables                         │
+│ time_zones                     │
+│ trace_log                      │
+│ user_directories               │
+│ users                          │
+│ warnings                       │
+│ zeros                          │
+│ zeros_mt                       │
+└────────────────────────────────┘
+
+73 rows in set. Elapsed: 0.043 sec.
+```
+
+The tables in the _system_ schema contain useful information about what is taking place in the Clickhouse instance.  Data Engineers and DBAs will frequently consult these tables as part of their day to day roles and we will learn more about some of the key tables later.  
+
+
+## Log Files
+
+The Clickhouse log files are useful for debugging any issues, and actually provide a lot of information which may help you resolve users queries.  By default, the log files are stored in the following location
+
+```
+ls -la /var/log/clickhouse-server
+```
+
+Outputs:
+
+```
+drwxrwx--- 1 clickhouse clickhouse   4096 Nov 18 22:31 .
+drwxr-xr-x 1 root       root         4096 Nov 18 22:28 ..
+-rw-r----- 1 clickhouse clickhouse   4611 Nov 18 22:31 clickhouse-server.err.log
+-rw-r----- 1 clickhouse clickhouse 275539 Nov 18 22:40 clickhouse-server.log
+-rw-r----- 1 clickhouse clickhouse    451 Nov 18 22:31 stderr.log
+-rw-r----- 1 clickhouse clickhouse      0 Nov 18 22:31 stdout.log
+```
+
+YOu can see that we have seperate error and standard output logs.
+
+## Storage Location
+
+Clickhouse will by default store it's data on the local servers disk.  If you wish to backup the data, this is the location to replicate:
+
+```
+ls -la /var/lib/clickhouse
+```
+
+Outputs:
+
+```
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 access
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 backups
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 cores
+drwxr-x---  4 clickhouse clickhouse 4096 Nov 18 22:31 data
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 dictionaries_lib
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 flags
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 format_schemas
+drwxr-x---  4 clickhouse clickhouse 4096 Nov 18 22:31 metadata
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 metadata_dropped
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 preprocessed_configs
+-rw-r-----  1 clickhouse clickhouse   57 Nov 18 22:31 status
+drwxr-x--- 10 clickhouse clickhouse 4096 Nov 18 22:31 store
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 tmp
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 user_defined
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 user_files
+drwxr-x---  2 clickhouse clickhouse 4096 Nov 18 22:31 user_scripts
+-rw-r-----  1 clickhouse clickhouse   36 Nov 18 22:31 uuid
+```
+
+## Upgrading Clickhouse
+
+Because the data and state is stored in the /var/lib folder, the process of upgrading Clickhouse simply invovles upgrading the service and then restarting.
+
+When the new version starts, the data will be backwards comparible and if necessary, migrated to the new version.
+
+##  Changing Clickhouse Log Level
+
+The Clickhouse server logs are often useful in diagnosing issues and understanding how clients are interacting with Clickhouse.  They are however fairly low level and detailed out of the box.  At this stage therefore, it is worth reducing the logging level to only show warnings and errors as opposed to trace level logging.  
+
+To change this, stop the Clickhouse server using CTRL+C, then open the Clickhouse configuration file:
+
+```
+nano /etc/clickhouse-server/config.xml
+```
+
+And change the Clickhouse logger level from trace to warning:
+
+```
+<clickhouse>
+    <logger>
+        <level>warning</level>
+```
+
+When you restart the Clickhouse server, you will see fewer logs which are easier to monitor.
+
+## Summary
+
+In this lesson, we started a Clickhouse server process on the training virtual machine, and connected to it using the clickhouse client binary.  
+
+We then explored databases and tables, and looked at some of the relevant folders on the server where Clickhouse maintains its state and writes log files.
+
+We finally opened the Clickhouse main configuration file, and changed the log level from trace to warnings only.  
+
+In the next lesson, we will create our own database objects within the Clickhouse database.

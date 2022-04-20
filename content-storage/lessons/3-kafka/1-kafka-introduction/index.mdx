@@ -1,0 +1,86 @@
+---
+tocTitle: TBC
+title: Introduction To Kafka
+slug: kafka-introduction 
+order: 1
+custom_excerpt: Introduction to Apache Kafka including some of the core concepts and use cases.
+category:
+    - kafka
+---
+
+## Lesson Overview
+
+In this lesson we will introduce [Apache Kafka](https://kafka.apache.org) and cover some of the core concepts and use cases.
+
+## About Kafka
+
+Kafka is a distributed data streaming platform which allows you to exchange, publish and consume data in a performant, scalable and reliable way.
+
+For example, imagine a use case such as a server calculating the latest prices of stocks on a stock exchange, and distributing these price updates to thousands of mobile clients in real time.  Kafka is the messaging technology commonly used to fulfill streaming data use cases such as this where speed, scalability and reliability are essential.  
+
+For those who are familiar with messaging technology, Kafka can be thought of in a similar way to  traditional message brokers such as [Tibco](https://www.tibco.com/) or [RabbitMQ](https://www.rabbitmq.com/).  However, there are some important architectural differences that we will explain later, and Kafka is also much more scalable and performant than previous generations of this technology.  
+
+Kafka is open source and free to download and deploy, though there are commercially supported and managed service options from [Confluent](http://confluent.io), who are the main commercial and technical drivers being the development of Kafka.   
+
+Kafka is very widely deployed within thousands of companies, and is by far the leading platform for data integration in use in industry today.  It is therefore an important area of knowledge for aspiring Data Engineers.
+
+## Use Cases
+
+Kafka is used in many use cases where we need to exchange data quickly, reliably and scalably.  Some of the most common use cases include:
+
+- Real Time Streaming e.g. streaming real time updates from servers to mobile applications;
+- SOA or Microservice Integration e.g. Integrating back-end services such as triggering an email when a customer places an order;
+- Data Exchange e,g. Taking data from a source to a destination such as from your application into your data lake;
+- Real Time BI & Analytics e.g. Calculating metrics and monitoring the state of your business in real time;
+
+Data integration scenarios like this occur across all industries. For instance, ecommerce, stock exchanges, IOT data, online advertising etc.  Again, Kafka is appropriate for any situation where we need to distribute data reliabily and with high performance.  
+
+## Key Concepts
+
+Though we will cover the core concepts of Kafka in detail throughout the course, we wanted to introduce some key concepts and terminology at this early stage:
+
+### Broker
+
+A single Kafka server process is referred to as a Broker.  It is the responsibility of the broker to accept messages from _producers_ and distribute them to to interested _consumers_ in a performant and reliable manner.  
+
+### Broker Cluster
+
+Though it is possible to have a single Kafka broker doing all of the work, this would be risky in a production environment in case the process or the server were to crash.  Therefore, for performance and resiliency reasons, brokers are often arranged into a cluster. 
+
+### Producers and Consumers
+
+Producers are the processes sending messages to the Kafka broker, and Consumers are the processes receiving messages from the broker.  It is possible to have many thousands of consumers and producers interacting with the broker at any one time if necessary.  
+
+### Messages
+
+A broker is responsible for accepting messages from the producers and delivering them to the interested consumers.  
+
+Kafka messages are comprised of a key and a value.  Kafka places limited requirements on the actual format of this both the key and the value.  These are all valid messages.
+
+```
+1 : { "order_number" : 1, "order_category" : "Electronics" }
+1 : 1/Elecrtronics
+!@££$ : !£EADADAR£!£RADDASDASDASDASDASD
+<my_key/> : </my_value>
+```
+
+### Topics
+
+All of the messages that are sent on a Kafka broker are sent to a specific topic.  A topic has a name, which could be something such as Orders, Website_Visits, or Prices, describing the data within the topic.  Topics can be created statically by the Kafka administrator, or also created dynamically by producers and consumers if appropriate.  
+
+### Partitions
+
+In order to provide improved throughput and performance, topics are further sub-divided into partitions which can be written to and read from in parallel.  This improves the scalability and throughput of your Kafka cluster.  
+
+## Summary  
+
+With Kafka, it’s relatively easy to create a broker and begin streaming messages.  However, running a Kafka cluster reliably, at scale, and with the correct message routing and delivery semantics does require some knowlege of the concepts above.  
+
+In the next lesson, we will begin by setting up our own Kafka broker.
+
+
+
+
+
+
+
